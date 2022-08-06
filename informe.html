@@ -9,10 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="nombres" />
+<meta name="author" content="SH-MRM" />
 
 
-<title>titulo</title>
+<title>TP1_Grupo-7</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -362,20 +362,57 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">titulo</h1>
-<h4 class="author">nombres</h4>
+<h1 class="title toc-ignore">TP1_Grupo-7</h1>
+<h4 class="author">SH-MRM</h4>
 
 </div>
 
 
 <div id="introducción" class="section level2">
 <h2>Introducción</h2>
+<p>Los datos que se van a utilizar para la elaboración de este informe
+corresponden a la Encuesta de Uso del Tiempo elaborada por la Dirección
+General de Estadística y Censos del Ministerio de Economía y Finanzas
+del Gobierno de la Ciudad de Buenos Aires (GCBA) en el año 2016.</p>
+<p>La encuesta releva información sobre el tiempo destinado a la
+realización de diversas actividades de la población de la Ciudad de
+Buenos Aires.</p>
+<p>Como antecedente se registra una encuesta anterior realizada en el
+año 2005.</p>
 </div>
 <div id="exploración-de-los-datos" class="section level2">
 <h2>Exploración de los datos</h2>
-<pre class="r"><code># Código para cargar o leer los datos</code></pre>
-<pre class="r"><code># Cödigo de R acá 
-# Agregá más bloques según sea necesario</code></pre>
+<pre class="r"><code># Código para cargar o leer los datos
+
+datos_uso_tiempo &lt;- read_csv(&quot;datos/encuesta_uso_tiempo_2016.csv&quot;)</code></pre>
+<pre><code>## Rows: 2336 Columns: 27
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (10): hogar, sexo, dia_laborable, dia_tipico, rango_etario, nivel_educat...
+## dbl (17): edad, trabajo_pago, trabajo_domestico_no_pago, voluntariados, estu...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>head(datos_uso_tiempo)</code></pre>
+<pre><code>## # A tibble: 6 × 27
+##   hogar sexo   edad dia_laborable    trabajo_pago trabajo_domesti… voluntariados
+##   &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;                   &lt;dbl&gt;            &lt;dbl&gt;         &lt;dbl&gt;
+## 1 1_1   Varon    14 &quot;D\xeda no labo…            0              0.1             0
+## 2 2_1   Varon    14 &quot;D\xeda no labo…            0              1               0
+## 3 3_1   Varon    14 &quot;D\xeda no labo…            0              0.2             0
+## 4 4_1   Varon    14 &quot;D\xeda no labo…            0              1.8             0
+## 5 5_1   Varon    14 &quot;D\xeda no labo…            0              0               0
+## 6 6_1   Mujer    14 &quot;D\xeda no labo…            0              3               0
+## # … with 20 more variables: estudio_educacion &lt;dbl&gt;, recreacion &lt;dbl&gt;,
+## #   aplicaciones &lt;dbl&gt;, tareas_cuidados &lt;dbl&gt;, cuidado_personal &lt;dbl&gt;,
+## #   trabajo_pago2 &lt;dbl&gt;, trabajo_domestico_no_pago2 &lt;dbl&gt;,
+## #   voluntariados2 &lt;dbl&gt;, estudio_educacion2 &lt;dbl&gt;, recreacion2 &lt;dbl&gt;,
+## #   aplicaciones2 &lt;dbl&gt;, tareas_cuidados2 &lt;dbl&gt;, cuidado_personal2 &lt;dbl&gt;,
+## #   dia_tipico &lt;chr&gt;, rango_etario &lt;chr&gt;, nivel_educativo &lt;chr&gt;,
+## #   relacion_parentesco_jefe &lt;chr&gt;, tipo_hogar &lt;chr&gt;, quintil_ingreso &lt;chr&gt;, …</code></pre>
+<p>Exploración de Datos</p>
+<pre class="r"><code>dim(datos_uso_tiempo)</code></pre>
+<pre><code>## [1] 2336   27</code></pre>
 </div>
 <div id="hipótesis" class="section level2">
 <h2>Hipótesis</h2>

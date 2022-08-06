@@ -1,6 +1,6 @@
 ---
-title: "titulo"
-author: "nombres"
+title: "TP1_Grupo-7"
+author: "SH-MRM"
 output: html_document
 ---
 
@@ -8,29 +8,46 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 # Cargar los paquetes necesarios acá
+library(readr)
+library(tidyverse)
 ```
 
 
 ## Introducción
 
+Los datos que se van a utilizar para la elaboración de este informe corresponden a la Encuesta de Uso del Tiempo elaborada por la Dirección General de Estadística y Censos del Ministerio de Economía y Finanzas del Gobierno de la Ciudad de Buenos Aires (GCBA) en el año 2016.
 
+La encuesta releva información sobre el tiempo destinado a la realización de diversas actividades de la población de la Ciudad de Buenos Aires.
+
+Como antecedente se registra una encuesta anterior realizada en el año 2005.
 
 ## Exploración de los datos
 
 
 ```{r}
 # Código para cargar o leer los datos
+
+datos_uso_tiempo <- read_csv("datos/encuesta_uso_tiempo_2016.csv")
+head(datos_uso_tiempo)
+```
+
+
+```{r}
+## Visualización de la cantidad de varibles y observaciones y el nombre de las variables
+
+dim(datos_uso_tiempo)
+names(datos_uso_tiempo)
 ```
 
 
 
 ```{r}
-# Cödigo de R acá 
-# Agregá más bloques según sea necesario
+
 ```
 
 
-
 ## Hipótesis
+
+
 
 
