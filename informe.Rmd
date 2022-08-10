@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Cargar los paquetes necesarios acá
 library(readr)
 library(tidyverse)
+
 ```
 
 
@@ -47,6 +48,9 @@ names(datos_uso_tiempo)
 
 
 ## Hipótesis
+
+
+Prueba de Commit+Push (SAM)
 
 
 
