@@ -11,9 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(readr)
 library(tidyverse)
 
-library(usethis)
-
-
 ```
 
 
@@ -52,8 +49,6 @@ names(datos_uso_tiempo)
 
 ## Hipótesis
 
-
-Prueba de Commit+Push (SAM)
 
 
 
