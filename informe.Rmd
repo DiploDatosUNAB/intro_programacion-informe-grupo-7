@@ -43,9 +43,27 @@ names(datos_uso_tiempo)
 
 
 ```{r}
+##Analizamos los aspectos sociodemográficos del dataset
+
+datos_uso_tiempo %>% 
+  group_by(sexo) %>% 
+  summarise(cantidad = n())
+
+datos_uso_tiempo %>% 
+  group_by(rango_etario) %>% 
+  summarise(cantidad = n())
 
 ```
 
+```{r}
+##Primera exploración sobre los datos de uso del tiempo
+
+summarise(datos_uso_tiempo, prom_trabajo_pago = mean(trabajo_pago))
+
+datos_uso_tiempo %>% 
+  group_by (rango_etario) %>% 
+  summarise(prom_horas_trabajadas=mean(trabajo_pago))
+```
 
 ## Hipótesis
 
