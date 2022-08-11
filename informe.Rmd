@@ -28,7 +28,8 @@ Como antecedente se registra una encuesta anterior realizada en el año 2005.
 ```{r}
 # Código para cargar o leer los datos
 
-datos_uso_tiempo <- read_csv("datos/encuesta_uso_tiempo_2016.csv")
+datos_uso_tiempo <- read_csv("datos/encuesta_uso_tiempo_2016.csv",
+                             locale = locale(encoding = "ISO-8859-1"))
 head(datos_uso_tiempo)
 ```
 
