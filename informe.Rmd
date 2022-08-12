@@ -34,6 +34,7 @@ head(datos_uso_tiempo)
 ```
 
 
+
 ```{r}
 ## Visualización de la cantidad de varibles y observaciones y el nombre de las variables
 
@@ -41,20 +42,34 @@ dim(datos_uso_tiempo)
 names(datos_uso_tiempo)
 ```
 
+Utilizando la función "dim()", se obtienen las dimensiones del dataframe, esto es, la cantidad de filas (2336 observaciones) y columnas (27 variables). También es posible identificar los nombres de las variables, corriendo la función "names()". 
+
+A los efectos de acotar el análisis, se decidió utilizar sólo algunas variables de interés, tales como las sociodemográficas principales ("sexo", "rango_etario", "estado_ocupacional", "nivel_educativo") y las específicas de la presente encuesta ("trabajo_pago", "trabajo_domestico_no_pago" "quintil_ingreso"), con el objetivo de generar los cruces necesarios que propendan un estudio preciso del caso.
 
 
 ```{r}
 ##Analizamos los aspectos sociodemográficos del dataset
 
 datos_uso_tiempo %>% 
-  group_by(sexo) %>% 
-  summarise(cantidad = n())
+  group_by (sexo) %>%
+  summarise (frec_sexo = n()) %>% 
+  mutate (porcentaje_sexo = frec_sexo/sum(frec_sexo)*100)
 
 datos_uso_tiempo %>% 
-  group_by(rango_etario) %>% 
-  summarise(cantidad = n())
+  group_by (rango_etario) %>%
+  summarise (frec_edad = n()) %>% 
+  mutate (porcentaje_edad = frec_edad/sum(frec_edad)*100)
+
+datos_uso_tiempo %>% 
+  group_by (estado_ocupacional) %>%
+  summarise (frec_ocup = n()) %>% 
+  mutate (porcentaje_ocup = frec_ocup/sum(frec_ocup)*100)
+
 
 ```
+## Descripción de variables sociodemográficas prelminares
+
+El universo de las personas encuestadas se ubica en un total de 2336, de las cuales 1345 son mujeres y 991 son varones. En ese sentido, la muestra se encuentra sesgada, dado que la proporción de mujeres (57%) no es representativa del porcentaje de la población femenina en el total de la población de la Ciudad de Buenos Aires. (REFORMUAR Y COMPLETAR)
 
 ```{r}
 ##Primera exploración sobre los datos de uso del tiempo
@@ -64,6 +79,12 @@ summarise(datos_uso_tiempo, prom_trabajo_pago = mean(trabajo_pago))
 datos_uso_tiempo %>% 
   group_by (rango_etario) %>% 
   summarise(prom_horas_trabajadas=mean(trabajo_pago))
+
+datos_uso_tiempo %>% 
+  group_by (sexo) %>% 
+  summarise(prom_horas_trabajadas=mean(trabajo_pago))
+
+
 ```
 
 ## Hipótesis
