@@ -44,7 +44,9 @@ names(datos_uso_tiempo)
 
 Utilizando la función "dim()", se obtienen las dimensiones del dataframe, esto es, la cantidad de filas (2336 observaciones) y columnas (27 variables). También es posible identificar los nombres de las variables, corriendo la función "names()". 
 
-A los efectos de acotar el análisis, se decidió utilizar sólo algunas variables de interés, tales como las sociodemográficas principales ("sexo", "rango_etario", "estado_ocupacional", "nivel_educativo") y las específicas de la presente encuesta ("trabajo_pago", "trabajo_domestico_no_pago" "quintil_ingreso"), con el objetivo de generar los cruces necesarios que propendan un estudio preciso del caso.
+Según la guía metodológica presentada por la Dirección, encargada de recopilar y procesar los datos de la Encuesta sobre el Uso del Tiempo en la Ciudad de Buenos Aires (de aquí en más,"UT CABA") el objetivo enunciado consta de <<producir información sobre el tiempo que las personas (mujeres y varones, jóvenes,personas mayores) que habitan en la Ciudad de Buenos Aires dedican cotidianamente a diferentes actividades,incluyendo el trabajo remunerado, las actividades domésticas, el cuidado de niños, niñas, personas mayores o con discapacidad, el estudio, el esparcimiento, los viajes y traslados, etc.>>
+
+Si bien la información contenida en la base de datos habilita un vasto análisis al respecto, en este primer trabajo se decidió utilizar y procesar sólo algunas variables de interés, tales como las sociodemográficas principales ("sexo", "rango_etario", "estado_ocupacional", "nivel_educativo") y las específicas de la presente encuesta ("trabajo_pago", "trabajo_domestico_no_pago" "quintil_ingreso"), con el objetivo de generar los cruces necesarios que propendan un estudio preciso del caso.
 
 
 ```{r}
@@ -65,11 +67,23 @@ datos_uso_tiempo %>%
   summarise (frec_ocup = n()) %>% 
   mutate (porcentaje_ocup = frec_ocup/sum(frec_ocup)*100)
 
+filtro_mujer <- filter(datos_uso_tiempo, sexo == "Mujer")
+
+filtro_varon <- filter(datos_uso_tiempo, sexo == "Varon")
+
+filtro_ocup <- filter(datos_uso_tiempo, estado_ocupacional == "Ocupado")
+
+filtro_inactivo <- filter(datos_uso_tiempo, estado_ocupacional == "Inactivo")
 
 ```
 ## Descripción de variables sociodemográficas prelminares
 
-El universo de las personas encuestadas se ubica en un total de 2336, de las cuales 1345 son mujeres y 991 son varones. En ese sentido, la muestra se encuentra sesgada, dado que la proporción de mujeres (57%) no es representativa del porcentaje de la población femenina en el total de la población de la Ciudad de Buenos Aires. (REFORMUAR Y COMPLETAR)
+El universo de las personas encuestadas se ubica en un total de 2336, de las cuales 1345 son mujeres y 991 son varones. En ese sentido, es posible notar que la muestra se encuentra sesgada, dado que la proporción de mujeres encuestadas (57%) supera al porcentaje de población femenina que habita en la Ciudad de Buenos Aires, por lo que las mujeres en esta muestra se encuentran sobrerepresentadas. 
+
+En segundo lugar, se desprende que, del análisis de la tabla de frecuencias según rangos etáreos, la mayor cantidad de casos encuestados se halla en edades de entre 25 y 39 años (28,8%), seguido de personas que superan los 65 años (23,4%).
+
+Finalmente, del análisis de la tercera tabla, que devuelve la frecuencia de casos según estado ocupacional, se observa que el grueso de la muestra la componen personas ocupadas (68,8%), es decir, que actualmente cuentan con trabajo, o bien trabajaron al menos 1 hora en la semana de referencia, y en segundo lugar, personas inactivas (27,3%). Cabe recordar que la condición de inactividad refiere a la pertenencia a un determinado grupo etáreo (ya sea, menores de 14 años, o mayores de 65) o bien por condiciones particulares (personas con discapacidad, estudiantes, entre otros).
+
 
 ```{r}
 ##Primera exploración sobre los datos de uso del tiempo
