@@ -36,7 +36,7 @@ head(datos_uso_tiempo)
 
 
 ```{r}
-## Visualización de la cantidad de varibles y observaciones y el nombre de las variables
+## Visualizamos la cantidad de varibles y observaciones y el nombre de las variables
 
 dim(datos_uso_tiempo)
 names(datos_uso_tiempo)
@@ -76,7 +76,7 @@ filtro_ocup <- filter(datos_uso_tiempo, estado_ocupacional == "Ocupado")
 filtro_inactivo <- filter(datos_uso_tiempo, estado_ocupacional == "Inactivo")
 
 ```
-## Descripción de variables sociodemográficas prelminares
+## Descripción de variables sociodemográficas preliminares
 
 El universo de las personas encuestadas se ubica en un total de 2336, de las cuales 1345 son mujeres y 991 son varones. En ese sentido, es posible notar que la muestra se encuentra sesgada, dado que la proporción de mujeres encuestadas (57%) supera al porcentaje de población femenina que habita en la Ciudad de Buenos Aires, por lo que las mujeres en esta muestra se encuentran sobrerepresentadas. 
 
@@ -86,22 +86,70 @@ Finalmente, del análisis de la tercera tabla, que devuelve la frecuencia de cas
 
 
 ```{r}
-##Primera exploración sobre los datos de uso del tiempo
-
-summarise(datos_uso_tiempo, prom_trabajo_pago = mean(trabajo_pago))
+##Exploramos datos sobre cualidad laborable o no del día de la encuesta
 
 datos_uso_tiempo %>% 
-  group_by (rango_etario) %>% 
-  summarise(prom_horas_trabajadas=mean(trabajo_pago))
+  filter(is.na(dia_laborable))
+
+datos_uso_tiempo %>% 
+  group_by (dia_laborable) %>%
+  summarise (frec_dialaborable = n()) %>%
+  mutate (porcentaje_dialaborable = frec_dialaborable/sum(frec_dialaborable)*100)
+
+datos_uso_tiempo %>% 
+      filter(dia_laborable == "Día no laborable" & trabajo_pago > 0) %>% 
+                    summarise (frec_trabajo_dnl = n())
+
+datos_uso_tiempo %>% 
+      filter(estado_ocupacional != "Ocupado" & trabajo_pago > 0) %>% 
+                    summarise (frec_trabajo_nocup = n())
+  
+```
+
+## Descripción de los datos
+
+La encuesta releva información relativa a la cantidad de tiempo que destinado al trabajo pago así como reúne datos sobre el tipo de jornada en la que se realizaron las variadas actividades. Dado que nuestro interes es indagar sobre el tiempo dedicado al trabajo en sus distintas formas, nos pareció relevante descartar posibles anomalías en el registro de los datos sobre la jornada laboral, en este sentido lo que encontramos es que una pequeña fracción de quienes respondieron que el día de la encuesta fue **No laborable** dedicaron tiempo a realizar un trabajo pago. Algo similar ocurre cuando se hace este mismo análisis, pero para aquellas personas que declararon ser **Inactivas** o **Desocupadas**.
+
+
+```{r}
+##Exploramos los datos de uso del tiempo relacionados al trabajo remunerado y no remunerado
+
+summarise(datos_uso_tiempo, prom_trabajo_pago = mean(trabajo_pago))
 
 datos_uso_tiempo %>% 
   group_by (sexo) %>% 
   summarise(prom_horas_trabajadas=mean(trabajo_pago))
 
+summarise(datos_uso_tiempo, prom_trabajo_no_pago = mean(trabajo_domestico_no_pago))
+
+datos_uso_tiempo %>% 
+  group_by (sexo) %>% 
+  summarise(prom_horas_trabajadas=mean(trabajo_domestico_no_pago))
+
 
 ```
 
+##Descripción de los datos
+Cómo era esperable, al analizar la variable _trabajo_pago_ en relación al sexo de la persona encuestada se observa un aumento en la cantidad de horas trabajadas por aquellos identificados como varones. Por el contrario, en la variable _trabajo_domestico_no_pago_ ocurre el proceso inverso; al realizar el cruce por la variable _sexo_ aumenta la cantidad de horas que las mujeres dedican a estas tareas y disminuyen las que los hombres dedican. Esta es una línea de análisis que profundizaremos en las hipótesis y en las entregas futuras.
+
+
 ## Hipótesis
+
+_Hipótesis 1_
+Como afirmamos anteriormente nuestro interés principal es indagar sobre el tiempo dedicado a tareas laborales. En primer lugar queremos observar como se correlaciona en un día laborable, la cantidad de horas dedicas al trabajo con la realización de actividades recreativas y de cuidado personal.
+
+
+_Hipótesis 2_
+
+Como segunda hipótesis queremos corrobar si la cantidad de horas dedicadas a tareas de cuidado se correlaciona directamente con la cantidad de horas que se dedican al trabajo no remunerado .
+
+_Hipótesis 3_
+
+Partimos del supuesto general y corroborado en los análisis previos de que los varones dedican más horas al trabajo remunerado y las mujeres más al trabajo doméstico no remunerado. Sin embargo, consideramos que esto no es totalmente descriptivo del fenómeno actual por lo cual vamos sostenemos que a medida que aumenta el nivel de ingreso de los hogares, el tiempo dedicado a trabajo remunerado y no remunerado por hombres y mujeres se va equiparado.
+
+_Nota metodológica_
+
+Para esta última hipótesis pensabamos utilizar la variable _quintil_ingeso_ del dataset que registra a qué quintil pertenece cada hogar. Sin embargo al analizar los datos descubrimos que en todos los registros figura la categoría **5to Quintil** lo cuál es metodológicamente incorrecto y por tanto entendemos que el dataset tienen un error en ese campo. Para sortear este problema decidimos utilizar la variable _nivel_educativo_ como proxy para analizar el nivel de ingresos del hogar y de la persona encuestada.
 
 
 
