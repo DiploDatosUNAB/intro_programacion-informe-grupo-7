@@ -384,7 +384,8 @@ año 2005.</p>
 <h2>Exploración de los datos</h2>
 <pre class="r"><code># Código para cargar o leer los datos
 
-datos_uso_tiempo &lt;- read_csv(&quot;datos/encuesta_uso_tiempo_2016.csv&quot;)</code></pre>
+datos_uso_tiempo &lt;- read_csv(&quot;datos/encuesta_uso_tiempo_2016.csv&quot;,
+                             locale = locale(encoding = &quot;ISO-8859-1&quot;))</code></pre>
 <pre><code>## Rows: 2336 Columns: 27
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -395,27 +396,256 @@ datos_uso_tiempo &lt;- read_csv(&quot;datos/encuesta_uso_tiempo_2016.csv&quot;)<
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <pre class="r"><code>head(datos_uso_tiempo)</code></pre>
 <pre><code>## # A tibble: 6 × 27
-##   hogar sexo   edad dia_laborable    trabajo_pago trabajo_domesti… voluntariados
-##   &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;                   &lt;dbl&gt;            &lt;dbl&gt;         &lt;dbl&gt;
-## 1 1_1   Varon    14 &quot;D\xeda no labo…            0              0.1             0
-## 2 2_1   Varon    14 &quot;D\xeda no labo…            0              1               0
-## 3 3_1   Varon    14 &quot;D\xeda no labo…            0              0.2             0
-## 4 4_1   Varon    14 &quot;D\xeda no labo…            0              1.8             0
-## 5 5_1   Varon    14 &quot;D\xeda no labo…            0              0               0
-## 6 6_1   Mujer    14 &quot;D\xeda no labo…            0              3               0
-## # … with 20 more variables: estudio_educacion &lt;dbl&gt;, recreacion &lt;dbl&gt;,
-## #   aplicaciones &lt;dbl&gt;, tareas_cuidados &lt;dbl&gt;, cuidado_personal &lt;dbl&gt;,
+##   hogar sexo   edad dia_labora…¹ traba…² traba…³ volun…⁴ estud…⁵ recre…⁶ aplic…⁷
+##   &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 1_1   Varon    14 Día no labo…       0     0.1       0     0       9       7.3
+## 2 2_1   Varon    14 Día no labo…       0     1         0     8.3     2.7     2.5
+## 3 3_1   Varon    14 Día no labo…       0     0.2       0    11.3     2.6     0.3
+## 4 4_1   Varon    14 Día no labo…       0     1.8       0     4       7.7     3  
+## 5 5_1   Varon    14 Día no labo…       0     0         0     8.3     4.7     1.8
+## 6 6_1   Mujer    14 Día no labo…       0     3         0     0       4.2     4.8
+## # … with 17 more variables: tareas_cuidados &lt;dbl&gt;, cuidado_personal &lt;dbl&gt;,
 ## #   trabajo_pago2 &lt;dbl&gt;, trabajo_domestico_no_pago2 &lt;dbl&gt;,
 ## #   voluntariados2 &lt;dbl&gt;, estudio_educacion2 &lt;dbl&gt;, recreacion2 &lt;dbl&gt;,
 ## #   aplicaciones2 &lt;dbl&gt;, tareas_cuidados2 &lt;dbl&gt;, cuidado_personal2 &lt;dbl&gt;,
 ## #   dia_tipico &lt;chr&gt;, rango_etario &lt;chr&gt;, nivel_educativo &lt;chr&gt;,
-## #   relacion_parentesco_jefe &lt;chr&gt;, tipo_hogar &lt;chr&gt;, quintil_ingreso &lt;chr&gt;, …</code></pre>
-<p>Exploración de Datos</p>
-<pre class="r"><code>dim(datos_uso_tiempo)</code></pre>
+## #   relacion_parentesco_jefe &lt;chr&gt;, tipo_hogar &lt;chr&gt;, quintil_ingreso &lt;chr&gt;,
+## #   estado_ocupacional &lt;chr&gt;, and abbreviated variable names ¹​dia_laborable, …
+## # ℹ Use `colnames()` to see all variable names</code></pre>
+<pre class="r"><code>## Visualizamos la cantidad de varibles, observaciones y el nombre de las variables
+
+dim(datos_uso_tiempo)</code></pre>
 <pre><code>## [1] 2336   27</code></pre>
+<pre class="r"><code>names(datos_uso_tiempo)</code></pre>
+<pre><code>##  [1] &quot;hogar&quot;                      &quot;sexo&quot;                      
+##  [3] &quot;edad&quot;                       &quot;dia_laborable&quot;             
+##  [5] &quot;trabajo_pago&quot;               &quot;trabajo_domestico_no_pago&quot; 
+##  [7] &quot;voluntariados&quot;              &quot;estudio_educacion&quot;         
+##  [9] &quot;recreacion&quot;                 &quot;aplicaciones&quot;              
+## [11] &quot;tareas_cuidados&quot;            &quot;cuidado_personal&quot;          
+## [13] &quot;trabajo_pago2&quot;              &quot;trabajo_domestico_no_pago2&quot;
+## [15] &quot;voluntariados2&quot;             &quot;estudio_educacion2&quot;        
+## [17] &quot;recreacion2&quot;                &quot;aplicaciones2&quot;             
+## [19] &quot;tareas_cuidados2&quot;           &quot;cuidado_personal2&quot;         
+## [21] &quot;dia_tipico&quot;                 &quot;rango_etario&quot;              
+## [23] &quot;nivel_educativo&quot;            &quot;relacion_parentesco_jefe&quot;  
+## [25] &quot;tipo_hogar&quot;                 &quot;quintil_ingreso&quot;           
+## [27] &quot;estado_ocupacional&quot;</code></pre>
+<p>Utilizando la función “dim()”, se obtienen las dimensiones del
+dataframe, esto es, la cantidad de filas (2336 observaciones) y columnas
+(27 variables). También es posible identificar los nombres de las
+variables, corriendo la función “names()”.</p>
+<p>Según la guía metodológica presentada por la Dirección, encargada de
+recopilar y procesar los datos de la Encuesta sobre el Uso del Tiempo en
+la Ciudad de Buenos Aires (de aquí en más,“UT CABA”) el objetivo
+enunciado consta de &lt;&lt; producir información sobre el tiempo que
+las personas (mujeres y varones, jóvenes,personas mayores) que habitan
+en la Ciudad de Buenos Aires dedican cotidianamente a diferentes
+actividades,incluyendo el trabajo remunerado, las actividades
+domésticas, el cuidado de niños, niñas, personas mayores o con
+discapacidad, el estudio, el esparcimiento, los viajes y traslados,
+etc.&gt;&gt;</p>
+<p>Si bien la información contenida en la base de datos habilita un
+vasto análisis al respecto, en este primer trabajo se decidió utilizar y
+procesar sólo algunas variables de interés, tales como las
+sociodemográficas principales (“sexo”, “rango_etario”,
+“estado_ocupacional”, “nivel_educativo”) y las específicas de la
+presente encuesta (“trabajo_pago”, “trabajo_domestico_no_pago”
+“quintil_ingreso”), con el objetivo de generar los cruces necesarios que
+propendan un estudio preciso del caso.</p>
+<pre class="r"><code>##Analizamos los aspectos sociodemográficos del dataset
+
+datos_uso_tiempo %&gt;% 
+  group_by (sexo) %&gt;%
+  summarise (frec_sexo = n()) %&gt;% 
+  mutate (porcentaje_sexo = frec_sexo/sum(frec_sexo)*100)</code></pre>
+<pre><code>## # A tibble: 2 × 3
+##   sexo  frec_sexo porcentaje_sexo
+##   &lt;chr&gt;     &lt;int&gt;           &lt;dbl&gt;
+## 1 Mujer      1345            57.6
+## 2 Varon       991            42.4</code></pre>
+<pre class="r"><code>datos_uso_tiempo %&gt;% 
+  group_by (rango_etario) %&gt;%
+  summarise (frec_edad = n()) %&gt;% 
+  mutate (porcentaje_edad = frec_edad/sum(frec_edad)*100)</code></pre>
+<pre><code>## # A tibble: 5 × 3
+##   rango_etario frec_edad porcentaje_edad
+##   &lt;chr&gt;            &lt;int&gt;           &lt;dbl&gt;
+## 1 14-24              291            12.5
+## 2 25-39              672            28.8
+## 3 40-49              307            13.1
+## 4 50-64              521            22.3
+## 5 65+                545            23.3</code></pre>
+<pre class="r"><code>datos_uso_tiempo %&gt;% 
+  group_by (estado_ocupacional) %&gt;%
+  summarise (frec_ocup = n()) %&gt;% 
+  mutate (porcentaje_ocup = frec_ocup/sum(frec_ocup)*100)</code></pre>
+<pre><code>## # A tibble: 3 × 3
+##   estado_ocupacional frec_ocup porcentaje_ocup
+##   &lt;chr&gt;                  &lt;int&gt;           &lt;dbl&gt;
+## 1 Desocupado                92            3.94
+## 2 Inactivo                 637           27.3 
+## 3 Ocupado                 1607           68.8</code></pre>
+<pre class="r"><code>filtro_mujer &lt;- filter(datos_uso_tiempo, sexo == &quot;Mujer&quot;)
+
+filtro_varon &lt;- filter(datos_uso_tiempo, sexo == &quot;Varon&quot;)
+
+filtro_ocup &lt;- filter(datos_uso_tiempo, estado_ocupacional == &quot;Ocupado&quot;)
+
+filtro_inactivo &lt;- filter(datos_uso_tiempo, estado_ocupacional == &quot;Inactivo&quot;)</code></pre>
+</div>
+<div id="descripción-preliminar-de-variables-sociodemográficas" class="section level2">
+<h2>Descripción preliminar de variables sociodemográficas</h2>
+<p>El universo de las personas encuestadas se ubica en un total de 2336,
+de las cuales 1345 son mujeres y 991 son varones. En ese sentido, es
+posible notar que la muestra se encuentra sesgada, dado que la
+proporción de mujeres encuestadas (57%) supera al porcentaje de
+población femenina que habita en la Ciudad de Buenos Aires, por lo que
+las mujeres en esta muestra se encuentran sobrerepresentadas.</p>
+<p>En segundo lugar, se desprende que, del análisis de la tabla de
+frecuencias según rangos etáreos, la mayor cantidad de casos encuestados
+se halla en edades de entre 25 y 39 años (28,8%), seguido de personas
+que superan los 65 años (23,4%).</p>
+<p>Finalmente, del análisis de la tercera tabla, que devuelve la
+frecuencia de casos según estado ocupacional, se observa que el grueso
+de la muestra la componen personas ocupadas (68,8%), es decir, que
+actualmente cuentan con trabajo, o bien trabajaron al menos 1 hora en la
+semana de referencia, y en segundo lugar, personas inactivas (27,3%).
+Cabe recordar que la condición de inactividad refiere a la pertenencia a
+un determinado grupo etáreo (ya sea, menores de 14 años, o mayores de
+65) o bien por condiciones particulares (personas con discapacidad,
+estudiantes, entre otros).</p>
+<pre class="r"><code>##Exploramos datos sobre cualidad laborable o no laborable del día de la encuesta
+
+datos_uso_tiempo %&gt;% 
+  filter(is.na(dia_laborable))</code></pre>
+<pre><code>## # A tibble: 0 × 27
+## # … with 27 variables: hogar &lt;chr&gt;, sexo &lt;chr&gt;, edad &lt;dbl&gt;,
+## #   dia_laborable &lt;chr&gt;, trabajo_pago &lt;dbl&gt;, trabajo_domestico_no_pago &lt;dbl&gt;,
+## #   voluntariados &lt;dbl&gt;, estudio_educacion &lt;dbl&gt;, recreacion &lt;dbl&gt;,
+## #   aplicaciones &lt;dbl&gt;, tareas_cuidados &lt;dbl&gt;, cuidado_personal &lt;dbl&gt;,
+## #   trabajo_pago2 &lt;dbl&gt;, trabajo_domestico_no_pago2 &lt;dbl&gt;,
+## #   voluntariados2 &lt;dbl&gt;, estudio_educacion2 &lt;dbl&gt;, recreacion2 &lt;dbl&gt;,
+## #   aplicaciones2 &lt;dbl&gt;, tareas_cuidados2 &lt;dbl&gt;, cuidado_personal2 &lt;dbl&gt;, …
+## # ℹ Use `colnames()` to see all variable names</code></pre>
+<pre class="r"><code>datos_uso_tiempo %&gt;% 
+  group_by (dia_laborable) %&gt;%
+  summarise (frec_dialaborable = n()) %&gt;%
+  mutate (porcentaje_dialaborable = frec_dialaborable/sum(frec_dialaborable)*100)</code></pre>
+<pre><code>## # A tibble: 2 × 3
+##   dia_laborable    frec_dialaborable porcentaje_dialaborable
+##   &lt;chr&gt;                        &lt;int&gt;                   &lt;dbl&gt;
+## 1 Día laborable                 1122                    48.0
+## 2 Día no laborable              1214                    52.0</code></pre>
+<pre class="r"><code>datos_uso_tiempo %&gt;% 
+      filter(estado_ocupacional == &quot;Ocupado&quot; &amp; dia_laborable == &quot;Día no laborable&quot;) %&gt;% 
+                    summarise (frec_trabajo_dnl = n())</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   frec_trabajo_dnl
+##              &lt;int&gt;
+## 1              490</code></pre>
+<pre class="r"><code>datos_uso_tiempo %&gt;% 
+      filter(estado_ocupacional == &quot;Ocupado&quot; &amp; dia_laborable == &quot;Día no laborable&quot; &amp; trabajo_pago &gt; 0) %&gt;% 
+                    summarise (frec_trabajo_dnl = n())</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   frec_trabajo_dnl
+##              &lt;int&gt;
+## 1               37</code></pre>
+<pre class="r"><code>datos_uso_tiempo %&gt;% 
+      filter(estado_ocupacional != &quot;Ocupado&quot; &amp; trabajo_pago &gt; 0) %&gt;% 
+                    summarise (frec_trabajo_nocup = n())</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   frec_trabajo_nocup
+##                &lt;int&gt;
+## 1                 35</code></pre>
+</div>
+<div id="descripción-de-los-datos" class="section level2">
+<h2>Descripción de los datos</h2>
+<p>Como hemos señalado previamente, nos enfocaremos en el análisis de
+los datos que refieren, en particular, a la cantidad de tiempo destinado
+al trabajo en sus distintas formas y/o actividades, a lo largo de una
+jornada. A los efectos de llevar a cabo un estudio consistente de la
+información presente en la encuestra, consideramos necesario descartar
+posibles anomalías en el registro de los datos sobre la jornada laboral.
+Esto es: casos en los que la persona encuestada, considerada ocupada,
+registre horas dedicadas a una actividad laboral (“trabajo pago”) en un
+día no laborable. En este sentido, de los 1607 ocupadxs que releva la
+encuesta, 37 respondieron que el día de la encuesta fue <strong>No
+laborable</strong>, y dedicaron tiempo a realizar un trabajo pago. Si
+bien los porcentajes y valores difieren, ocurre algo similar cuando se
+hace este mismo análisis, pero para aquellas personas que declararon ser
+<strong>Inactivas</strong> o <strong>Desocupadas</strong>.</p>
+<pre class="r"><code>##Exploramos los datos de uso del tiempo relacionados al trabajo remunerado y no remunerado
+
+summarise(datos_uso_tiempo, prom_trabajo_pago = mean(trabajo_pago))</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   prom_trabajo_pago
+##               &lt;dbl&gt;
+## 1              4.24</code></pre>
+<pre class="r"><code>datos_uso_tiempo %&gt;% 
+  group_by (sexo) %&gt;% 
+  summarise(prom_horas_trabajadas=mean(trabajo_pago))</code></pre>
+<pre><code>## # A tibble: 2 × 2
+##   sexo  prom_horas_trabajadas
+##   &lt;chr&gt;                 &lt;dbl&gt;
+## 1 Mujer                  3.48
+## 2 Varon                  5.27</code></pre>
+<pre class="r"><code>summarise(datos_uso_tiempo, prom_trabajo_no_pago = mean(trabajo_domestico_no_pago))</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   prom_trabajo_no_pago
+##                  &lt;dbl&gt;
+## 1                 2.57</code></pre>
+<pre class="r"><code>datos_uso_tiempo %&gt;% 
+  group_by (sexo) %&gt;% 
+  summarise(prom_horas_trabajadas=mean(trabajo_domestico_no_pago))</code></pre>
+<pre><code>## # A tibble: 2 × 2
+##   sexo  prom_horas_trabajadas
+##   &lt;chr&gt;                 &lt;dbl&gt;
+## 1 Mujer                  3.14
+## 2 Varon                  1.81</code></pre>
+<p>##Descripción de los datos Cómo era esperable, al analizar la
+variable <em>trabajo_pago</em> en relación al sexo de la persona
+encuestada se observa un aumento en la cantidad de horas trabajadas por
+aquellos identificados como varones. Por el contrario, en la variable
+<em>trabajo_domestico_no_pago</em> ocurre el proceso inverso; al
+realizar el cruce por la variable <em>sexo</em> aumenta la cantidad de
+horas que las mujeres dedican a estas tareas y disminuyen las que los
+hombres dedican. Esta es una línea de análisis que profundizaremos en
+las hipótesis y en las entregas futuras.</p>
 </div>
 <div id="hipótesis" class="section level2">
 <h2>Hipótesis</h2>
+<p><em>Hipótesis 1</em> Como afirmamos anteriormente nuestro interés
+principal reside en el estudio del tiempo dedicado a tareas laborales.
+En primer lugar, queremos observar si existe correlación en un día
+laborable, la cantidad de horas dedicadas al trabajo con la realización
+de actividades recreativas y de cuidado personal.</p>
+<p><em>Hipótesis 2</em></p>
+<p>Como segunda hipótesis, nos interesa corrobar si la cantidad de horas
+destinadas a tareas de cuidado tiene correlación directa con la cantidad
+de horas que se dedican al trabajo no remunerado, y si esta relación,
+además, es más sensible según el sexo.</p>
+<p><em>Hipótesis 3</em></p>
+<p>Partiendo del supuesto general -y corroborado en los análisis
+previos- que los varones dedican más horas que las mujeres al trabajo
+remunerado, mientras que la media de horas de trabajo doméstico no pago
+es mayor en mujeres que en varones, consideramos que esto no describe
+con fidelidad el fenómeno actual. Con lo cual, se buscará verificar -a
+parti del planteo de la tercera hipótesis- la relación inversa que
+existe entre el nivel de ingreso de los hogares, y la brecha entre la
+media de horas de trabajadas (remuneradas y no remuneradas). Dicho de
+otra forma, se intuye que a medida que aumenta el nivel de ingreso de
+los hogares, el tiempo dedicado a trabajo remunerado y no remunerado por
+hombres y mujeres se va equiparado.</p>
+<p><em>Nota metodológica</em></p>
+<p>Para esta última hipótesis pensabamos utilizar la variable
+<em>quintil_ingeso</em> del dataset que registra a qué quintil pertenece
+cada hogar. Sin embargo al analizar los datos descubrimos que en todos
+los registros figura la categoría <strong>5to Quintil</strong> lo cuál
+es metodológicamente incorrecto y por tanto entendemos que el dataset
+presenta un error en ese campo. Para sortear este problema decidimos
+utilizar la variable <em>nivel_educativo</em> como proxy de análisis del
+nivel de ingresos del hogar y de la persona encuestada.</p>
 </div>
 
 

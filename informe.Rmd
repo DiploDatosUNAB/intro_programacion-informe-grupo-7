@@ -36,7 +36,7 @@ head(datos_uso_tiempo)
 
 
 ```{r}
-## Visualizamos la cantidad de varibles y observaciones y el nombre de las variables
+## Visualizamos la cantidad de varibles, observaciones y el nombre de las variables
 
 dim(datos_uso_tiempo)
 names(datos_uso_tiempo)
@@ -44,7 +44,7 @@ names(datos_uso_tiempo)
 
 Utilizando la función "dim()", se obtienen las dimensiones del dataframe, esto es, la cantidad de filas (2336 observaciones) y columnas (27 variables). También es posible identificar los nombres de las variables, corriendo la función "names()". 
 
-Según la guía metodológica presentada por la Dirección, encargada de recopilar y procesar los datos de la Encuesta sobre el Uso del Tiempo en la Ciudad de Buenos Aires (de aquí en más,"UT CABA") el objetivo enunciado consta de <<producir información sobre el tiempo que las personas (mujeres y varones, jóvenes,personas mayores) que habitan en la Ciudad de Buenos Aires dedican cotidianamente a diferentes actividades,incluyendo el trabajo remunerado, las actividades domésticas, el cuidado de niños, niñas, personas mayores o con discapacidad, el estudio, el esparcimiento, los viajes y traslados, etc.>>
+Según la guía metodológica presentada por la Dirección, encargada de recopilar y procesar los datos de la Encuesta sobre el Uso del Tiempo en la Ciudad de Buenos Aires (de aquí en más,"UT CABA") el objetivo enunciado consta de << producir información sobre el tiempo que las personas (mujeres y varones, jóvenes,personas mayores) que habitan en la Ciudad de Buenos Aires dedican cotidianamente a diferentes actividades,incluyendo el trabajo remunerado, las actividades domésticas, el cuidado de niños, niñas, personas mayores o con discapacidad, el estudio, el esparcimiento, los viajes y traslados, etc.>>
 
 Si bien la información contenida en la base de datos habilita un vasto análisis al respecto, en este primer trabajo se decidió utilizar y procesar sólo algunas variables de interés, tales como las sociodemográficas principales ("sexo", "rango_etario", "estado_ocupacional", "nivel_educativo") y las específicas de la presente encuesta ("trabajo_pago", "trabajo_domestico_no_pago" "quintil_ingreso"), con el objetivo de generar los cruces necesarios que propendan un estudio preciso del caso.
 
@@ -76,7 +76,7 @@ filtro_ocup <- filter(datos_uso_tiempo, estado_ocupacional == "Ocupado")
 filtro_inactivo <- filter(datos_uso_tiempo, estado_ocupacional == "Inactivo")
 
 ```
-## Descripción de variables sociodemográficas preliminares
+## Descripción preliminar de variables sociodemográficas 
 
 El universo de las personas encuestadas se ubica en un total de 2336, de las cuales 1345 son mujeres y 991 son varones. En ese sentido, es posible notar que la muestra se encuentra sesgada, dado que la proporción de mujeres encuestadas (57%) supera al porcentaje de población femenina que habita en la Ciudad de Buenos Aires, por lo que las mujeres en esta muestra se encuentran sobrerepresentadas. 
 
@@ -86,7 +86,7 @@ Finalmente, del análisis de la tercera tabla, que devuelve la frecuencia de cas
 
 
 ```{r}
-##Exploramos datos sobre cualidad laborable o no del día de la encuesta
+##Exploramos datos sobre cualidad laborable o no laborable del día de la encuesta
 
 datos_uso_tiempo %>% 
   filter(is.na(dia_laborable))
@@ -97,18 +97,23 @@ datos_uso_tiempo %>%
   mutate (porcentaje_dialaborable = frec_dialaborable/sum(frec_dialaborable)*100)
 
 datos_uso_tiempo %>% 
-      filter(dia_laborable == "Día no laborable" & trabajo_pago > 0) %>% 
+      filter(estado_ocupacional == "Ocupado" & dia_laborable == "Día no laborable") %>% 
+                    summarise (frec_trabajo_dnl = n())
+
+datos_uso_tiempo %>% 
+      filter(estado_ocupacional == "Ocupado" & dia_laborable == "Día no laborable" & trabajo_pago > 0) %>% 
                     summarise (frec_trabajo_dnl = n())
 
 datos_uso_tiempo %>% 
       filter(estado_ocupacional != "Ocupado" & trabajo_pago > 0) %>% 
                     summarise (frec_trabajo_nocup = n())
   
+
 ```
 
 ## Descripción de los datos
 
-La encuesta releva información relativa a la cantidad de tiempo que destinado al trabajo pago así como reúne datos sobre el tipo de jornada en la que se realizaron las variadas actividades. Dado que nuestro interes es indagar sobre el tiempo dedicado al trabajo en sus distintas formas, nos pareció relevante descartar posibles anomalías en el registro de los datos sobre la jornada laboral, en este sentido lo que encontramos es que una pequeña fracción de quienes respondieron que el día de la encuesta fue **No laborable** dedicaron tiempo a realizar un trabajo pago. Algo similar ocurre cuando se hace este mismo análisis, pero para aquellas personas que declararon ser **Inactivas** o **Desocupadas**.
+Como hemos señalado previamente, nos enfocaremos en el análisis de los datos que refieren, en particular, a la cantidad de tiempo destinado al trabajo en sus distintas formas y/o actividades, a lo largo de una jornada. A los efectos de llevar a cabo un estudio consistente de la información presente en la encuestra, consideramos necesario descartar posibles anomalías en el registro de los datos sobre la jornada laboral. Esto es: casos en los que la persona encuestada, considerada ocupada, registre horas dedicadas a una actividad laboral ("trabajo pago") en un día no laborable. En este sentido, de los 1607 ocupadxs que releva la encuesta, 37 respondieron que el día de la encuesta fue **No laborable**, y dedicaron tiempo a realizar un trabajo pago. Si bien los porcentajes y valores difieren, ocurre algo similar cuando se hace este mismo análisis, pero para aquellas personas que declararon ser **Inactivas** o **Desocupadas**.
 
 
 ```{r}
@@ -126,7 +131,6 @@ datos_uso_tiempo %>%
   group_by (sexo) %>% 
   summarise(prom_horas_trabajadas=mean(trabajo_domestico_no_pago))
 
-
 ```
 
 ##Descripción de los datos
@@ -136,20 +140,20 @@ Cómo era esperable, al analizar la variable _trabajo_pago_ en relación al sexo
 ## Hipótesis
 
 _Hipótesis 1_
-Como afirmamos anteriormente nuestro interés principal es indagar sobre el tiempo dedicado a tareas laborales. En primer lugar queremos observar como se correlaciona en un día laborable, la cantidad de horas dedicas al trabajo con la realización de actividades recreativas y de cuidado personal.
+Como afirmamos anteriormente nuestro interés principal reside en el estudio del tiempo dedicado a tareas laborales. En primer lugar, queremos observar si existe correlación en un día laborable, la cantidad de horas dedicadas al trabajo con la realización de actividades recreativas y de cuidado personal.
 
 
 _Hipótesis 2_
 
-Como segunda hipótesis queremos corrobar si la cantidad de horas dedicadas a tareas de cuidado se correlaciona directamente con la cantidad de horas que se dedican al trabajo no remunerado .
+Como segunda hipótesis, nos interesa corrobar si la cantidad de horas destinadas a tareas de cuidado tiene correlación directa con la cantidad de horas que se dedican al trabajo no remunerado, y si esta relación, además, es más sensible según el sexo. 
 
 _Hipótesis 3_
 
-Partimos del supuesto general y corroborado en los análisis previos de que los varones dedican más horas al trabajo remunerado y las mujeres más al trabajo doméstico no remunerado. Sin embargo, consideramos que esto no es totalmente descriptivo del fenómeno actual por lo cual vamos sostenemos que a medida que aumenta el nivel de ingreso de los hogares, el tiempo dedicado a trabajo remunerado y no remunerado por hombres y mujeres se va equiparado.
+Partiendo del supuesto general -y corroborado en los análisis previos- que los varones dedican más horas que las mujeres al trabajo remunerado, mientras que la media de horas de trabajo doméstico no pago es mayor en mujeres que en varones, consideramos que esto no describe con fidelidad el fenómeno actual. Con lo cual, se buscará verificar -a parti del planteo de la tercera hipótesis- la relación inversa que existe entre el nivel de ingreso de los hogares, y la brecha entre la media de horas de trabajadas (remuneradas y no remuneradas). Dicho de otra forma, se intuye que a medida que aumenta el nivel de ingreso de los hogares, el tiempo dedicado a trabajo remunerado y no remunerado por hombres y mujeres se va equiparado.
 
 _Nota metodológica_
 
-Para esta última hipótesis pensabamos utilizar la variable _quintil_ingeso_ del dataset que registra a qué quintil pertenece cada hogar. Sin embargo al analizar los datos descubrimos que en todos los registros figura la categoría **5to Quintil** lo cuál es metodológicamente incorrecto y por tanto entendemos que el dataset tienen un error en ese campo. Para sortear este problema decidimos utilizar la variable _nivel_educativo_ como proxy para analizar el nivel de ingresos del hogar y de la persona encuestada.
+Para esta última hipótesis pensabamos utilizar la variable _quintil_ingeso_ del dataset que registra a qué quintil pertenece cada hogar. Sin embargo al analizar los datos descubrimos que en todos los registros figura la categoría **5to Quintil** lo cuál es metodológicamente incorrecto y por tanto entendemos que el dataset presenta un error en ese campo. Para sortear este problema decidimos utilizar la variable _nivel_educativo_ como proxy de análisis del nivel de ingresos del hogar y de la persona encuestada.
 
 
 
