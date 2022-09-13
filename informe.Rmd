@@ -67,14 +67,6 @@ datos_uso_tiempo %>%
   summarise (frec_ocup = n()) %>% 
   mutate (porcentaje_ocup = frec_ocup/sum(frec_ocup)*100)
 
-filtro_mujer <- filter(datos_uso_tiempo, sexo == "Mujer")
-
-filtro_varon <- filter(datos_uso_tiempo, sexo == "Varon")
-
-filtro_ocup <- filter(datos_uso_tiempo, estado_ocupacional == "Ocupado")
-
-filtro_inactivo <- filter(datos_uso_tiempo, estado_ocupacional == "Inactivo")
-
 ```
 ## Descripción preliminar de variables sociodemográficas 
 
@@ -145,7 +137,7 @@ Como afirmamos anteriormente nuestro interés principal reside en el estudio del
 
 _Hipótesis 2_
 
-Como segunda hipótesis, nos interesa corrobar si la cantidad de horas destinadas a tareas de cuidado tiene correlación directa con la cantidad de horas que se dedican al trabajo no remunerado, y si esta relación, además, es más sensible según el sexo. 
+Como segunda hipótesis, nos interesa corroborar si la cantidad de horas destinadas a tareas de cuidado tiene correlación directa con la cantidad de horas que se dedican al trabajo no remunerado, y si esta relación, además, es más sensible según el sexo. 
 
 _Hipótesis 3_
 
@@ -156,6 +148,52 @@ _Nota metodológica_
 Para esta última hipótesis pensabamos utilizar la variable _quintil_ingeso_ del dataset que registra a qué quintil pertenece cada hogar. Sin embargo al analizar los datos descubrimos que en todos los registros figura la categoría **5to Quintil** lo cuál es metodológicamente incorrecto y por tanto entendemos que el dataset presenta un error en ese campo. Para sortear este problema decidimos utilizar la variable _nivel_educativo_ como proxy de análisis del nivel de ingresos del hogar y de la persona encuestada.
 
 
+## Segunda Entrega
 
+En esta segunda entrega del Trabajo Práctico procedemos a analizar los datos para comenzar a dar respuesta a las hipótesis planteadas.
+
+## Hipótesis 1
+
+```{r}
+datos_uso_tiempo %>%  
+  select(dia_laborable, trabajo_pago, recreacion)  %>%  
+  pivot_longer(cols = c(trabajo_pago, recreacion), 
+               names_to = "actividad", values_to = "horas")  %>%  
+  group_by(dia_laborable, actividad) %>%  
+  summarise(horas = mean(horas))
+```
+Como era de esperar, en los días laborables el promedio de horas trabajadas se ubica entre las 8 y las 9 horas, en estos días, las horas de recreación son cercanas a las 2 horas. En cambio, en los días no laborables, las horas trabajadas se reducen prácticamente a 0, mientras que las horas de recreación se duplican con respecto a los días laborales.
+
+## Hipótesis 2
+
+```{r}
+datos_uso_tiempo %>%  
+  select(sexo, trabajo_domestico_no_pago, tareas_cuidados)  %>%  
+  pivot_longer(cols = c(trabajo_domestico_no_pago, tareas_cuidados), 
+               names_to = "actividad", values_to = "horas")  %>%  
+  group_by(sexo, actividad) %>%  
+  summarise(horas = mean(horas))
+```
+En un primer análisis se observa que las mujeres dedican más tiempo a tareas de cuidados como a trabajo doméstico no pago que los hombres y en ambos casos se da en una proporción de 2 a 1 en cuanto a la cantidad de horas dedicadas.
+
+## Hipótesis 3
+
+```{r}
+datos_uso_tiempo %>% 
+  filter(dia_laborable == "Día laborable") %>% 
+  select(sexo, trabajo_domestico_no_pago, trabajo_pago) %>%  
+  pivot_longer(cols = c(trabajo_domestico_no_pago, trabajo_pago), 
+               names_to = "trabajo", values_to = "horas") %>%  
+  group_by(sexo, trabajo) %>%  
+  summarise(horas = mean(horas))
+
+datos_uso_tiempo %>%
+  filter(dia_laborable == "Día laborable") %>% 
+  select(sexo, trabajo_pago, trabajo_domestico_no_pago, nivel_educativo)  %>%  
+  pivot_longer(cols = c(trabajo_pago, trabajo_domestico_no_pago), 
+               names_to = "actividad", values_to = "horas")  %>%  
+  group_by(sexo, nivel_educativo, actividad) %>%  
+  summarise(horas = mean(horas))
+```
 
 
