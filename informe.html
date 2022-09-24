@@ -486,13 +486,6 @@ datos_uso_tiempo %&gt;%
 ## 1 Desocupado                92            3.94
 ## 2 Inactivo                 637           27.3 
 ## 3 Ocupado                 1607           68.8</code></pre>
-<pre class="r"><code>filtro_mujer &lt;- filter(datos_uso_tiempo, sexo == &quot;Mujer&quot;)
-
-filtro_varon &lt;- filter(datos_uso_tiempo, sexo == &quot;Varon&quot;)
-
-filtro_ocup &lt;- filter(datos_uso_tiempo, estado_ocupacional == &quot;Ocupado&quot;)
-
-filtro_inactivo &lt;- filter(datos_uso_tiempo, estado_ocupacional == &quot;Inactivo&quot;)</code></pre>
 </div>
 <div id="descripción-preliminar-de-variables-sociodemográficas" class="section level2">
 <h2>Descripción preliminar de variables sociodemográficas</h2>
@@ -621,10 +614,10 @@ En primer lugar, queremos observar si existe correlación en un día
 laborable, la cantidad de horas dedicadas al trabajo con la realización
 de actividades recreativas y de cuidado personal.</p>
 <p><em>Hipótesis 2</em></p>
-<p>Como segunda hipótesis, nos interesa corrobar si la cantidad de horas
-destinadas a tareas de cuidado tiene correlación directa con la cantidad
-de horas que se dedican al trabajo no remunerado, y si esta relación,
-además, es más sensible según el sexo.</p>
+<p>Como segunda hipótesis, nos interesa corroborar si la cantidad de
+horas destinadas a tareas de cuidado tiene correlación directa con la
+cantidad de horas que se dedican al trabajo no remunerado, y si esta
+relación, además, es más sensible según el sexo.</p>
 <p><em>Hipótesis 3</em></p>
 <p>Partiendo del supuesto general -y corroborado en los análisis
 previos- que los varones dedican más horas que las mujeres al trabajo
@@ -646,6 +639,104 @@ es metodológicamente incorrecto y por tanto entendemos que el dataset
 presenta un error en ese campo. Para sortear este problema decidimos
 utilizar la variable <em>nivel_educativo</em> como proxy de análisis del
 nivel de ingresos del hogar y de la persona encuestada.</p>
+</div>
+<div id="segunda-entrega" class="section level2">
+<h2>Segunda Entrega</h2>
+<p>En esta segunda entrega del Trabajo Práctico procedemos a analizar
+los datos para comenzar a dar respuesta a las hipótesis planteadas.</p>
+</div>
+<div id="hipótesis-1" class="section level2">
+<h2>Hipótesis 1</h2>
+<pre class="r"><code>datos_uso_tiempo %&gt;%  
+  select(dia_laborable, trabajo_pago, recreacion)  %&gt;%  
+  pivot_longer(cols = c(trabajo_pago, recreacion), 
+               names_to = &quot;actividad&quot;, values_to = &quot;horas&quot;)  %&gt;%  
+  group_by(dia_laborable, actividad) %&gt;%  
+  summarise(horas = mean(horas))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;dia_laborable&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 4 × 3
+## # Groups:   dia_laborable [2]
+##   dia_laborable    actividad    horas
+##   &lt;chr&gt;            &lt;chr&gt;        &lt;dbl&gt;
+## 1 Día laborable    recreacion   2.36 
+## 2 Día laborable    trabajo_pago 8.67 
+## 3 Día no laborable recreacion   4.65 
+## 4 Día no laborable trabajo_pago 0.144</code></pre>
+<p>Como era de esperar, en los días laborables el promedio de horas
+trabajadas se ubica entre las 8 y las 9 horas, en estos días, las horas
+de recreación son cercanas a las 2 horas. En cambio, en los días no
+laborables, las horas trabajadas se reducen prácticamente a 0, mientras
+que las horas de recreación se duplican con respecto a los días
+laborales.</p>
+</div>
+<div id="hipótesis-2" class="section level2">
+<h2>Hipótesis 2</h2>
+<pre class="r"><code>datos_uso_tiempo %&gt;%  
+  select(sexo, trabajo_domestico_no_pago, tareas_cuidados)  %&gt;%  
+  pivot_longer(cols = c(trabajo_domestico_no_pago, tareas_cuidados), 
+               names_to = &quot;actividad&quot;, values_to = &quot;horas&quot;)  %&gt;%  
+  group_by(sexo, actividad) %&gt;%  
+  summarise(horas = mean(horas))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;sexo&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 4 × 3
+## # Groups:   sexo [2]
+##   sexo  actividad                 horas
+##   &lt;chr&gt; &lt;chr&gt;                     &lt;dbl&gt;
+## 1 Mujer tareas_cuidados            1.53
+## 2 Mujer trabajo_domestico_no_pago  3.14
+## 3 Varon tareas_cuidados            0.7 
+## 4 Varon trabajo_domestico_no_pago  1.81</code></pre>
+<p>En un primer análisis se observa que las mujeres dedican más tiempo a
+tareas de cuidados como a trabajo doméstico no pago que los hombres y en
+ambos casos se da en una proporción de 2 a 1 en cuanto a la cantidad de
+horas dedicadas.</p>
+</div>
+<div id="hipótesis-3" class="section level2">
+<h2>Hipótesis 3</h2>
+<pre class="r"><code>datos_uso_tiempo %&gt;% 
+  filter(dia_laborable == &quot;Día laborable&quot;) %&gt;% 
+  select(sexo, trabajo_domestico_no_pago, trabajo_pago) %&gt;%  
+  pivot_longer(cols = c(trabajo_domestico_no_pago, trabajo_pago), 
+               names_to = &quot;trabajo&quot;, values_to = &quot;horas&quot;) %&gt;%  
+  group_by(sexo, trabajo) %&gt;%  
+  summarise(horas = mean(horas))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;sexo&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 4 × 3
+## # Groups:   sexo [2]
+##   sexo  trabajo                   horas
+##   &lt;chr&gt; &lt;chr&gt;                     &lt;dbl&gt;
+## 1 Mujer trabajo_domestico_no_pago  2.18
+## 2 Mujer trabajo_pago               8.13
+## 3 Varon trabajo_domestico_no_pago  1.25
+## 4 Varon trabajo_pago               9.23</code></pre>
+<pre class="r"><code>datos_uso_tiempo %&gt;%
+  filter(dia_laborable == &quot;Día laborable&quot;) %&gt;% 
+  select(sexo, trabajo_pago, trabajo_domestico_no_pago, nivel_educativo)  %&gt;%  
+  pivot_longer(cols = c(trabajo_pago, trabajo_domestico_no_pago), 
+               names_to = &quot;actividad&quot;, values_to = &quot;horas&quot;)  %&gt;%  
+  group_by(sexo, nivel_educativo, actividad) %&gt;%  
+  summarise(horas = mean(horas))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;sexo&#39;, &#39;nivel_educativo&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 12 × 4
+## # Groups:   sexo, nivel_educativo [6]
+##    sexo  nivel_educativo                         actividad                 horas
+##    &lt;chr&gt; &lt;chr&gt;                                   &lt;chr&gt;                     &lt;dbl&gt;
+##  1 Mujer Secundario completo/Superior incompleto trabajo_domestico_no_pago  2.03
+##  2 Mujer Secundario completo/Superior incompleto trabajo_pago               7.96
+##  3 Mujer Secundario incompleto                   trabajo_domestico_no_pago  2.81
+##  4 Mujer Secundario incompleto                   trabajo_pago               7.76
+##  5 Mujer Superior completo                       trabajo_domestico_no_pago  2.17
+##  6 Mujer Superior completo                       trabajo_pago               8.30
+##  7 Varon Secundario completo/Superior incompleto trabajo_domestico_no_pago  1.21
+##  8 Varon Secundario completo/Superior incompleto trabajo_pago               9.10
+##  9 Varon Secundario incompleto                   trabajo_domestico_no_pago  1.43
+## 10 Varon Secundario incompleto                   trabajo_pago               9.09
+## 11 Varon Superior completo                       trabajo_domestico_no_pago  1.22
+## 12 Varon Superior completo                       trabajo_pago               9.44</code></pre>
 </div>
 
 

@@ -5,18 +5,21 @@ output: html_document
 ---
 
 
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 # Cargar los paquetes necesarios acá
 library(readr)
 library(tidyverse)
-
+library(gt)
+library(ggplot2)
 ```
 
 
 ## Introducción
 
-Los datos que se van a utilizar para la elaboración de este informe corresponden a la Encuesta de Uso del Tiempo elaborada por la Dirección General de Estadística y Censos del Ministerio de Economía y Finanzas del Gobierno de la Ciudad de Buenos Aires (GCBA) en el año 2016.
+Los datos que se van a utilizar para la elaboración de este informe corresponden a la Encuesta de Uso del Tiempo generada por la Dirección General de Estadística y Censos del Ministerio de Economía y Finanzas del Gobierno de la Ciudad de Buenos Aires (GCBA) en el año 2016.
 
 La encuesta releva información sobre el tiempo destinado a la realización de diversas actividades de la población de la Ciudad de Buenos Aires.
 
@@ -55,17 +58,25 @@ Si bien la información contenida en la base de datos habilita un vasto análisi
 datos_uso_tiempo %>% 
   group_by (sexo) %>%
   summarise (frec_sexo = n()) %>% 
-  mutate (porcentaje_sexo = frec_sexo/sum(frec_sexo)*100)
+  mutate (porcentaje_sexo = frec_sexo/sum(frec_sexo)*100) %>%
+  ggplot(aes(sexo, porcentaje_sexo)) +
+  geom_col(aes(width = 0.3, fill='red'))
+
 
 datos_uso_tiempo %>% 
   group_by (rango_etario) %>%
   summarise (frec_edad = n()) %>% 
-  mutate (porcentaje_edad = frec_edad/sum(frec_edad)*100)
+  mutate (porcentaje_edad = frec_edad/sum(frec_edad)*100) %>%
+  ggplot(aes(rango_etario, porcentaje_edad)) + 
+  geom_col(aes(width = 0.3, fill='lightblue'))
+
 
 datos_uso_tiempo %>% 
   group_by (estado_ocupacional) %>%
   summarise (frec_ocup = n()) %>% 
-  mutate (porcentaje_ocup = frec_ocup/sum(frec_ocup)*100)
+  mutate (porcentaje_ocup = frec_ocup/sum(frec_ocup)*100) %>%
+  ggplot(aes(estado_ocupacional, porcentaje_ocup)) + 
+  geom_col(aes(width = 0.3, fill='lightgreen'))
 
 ```
 ## Descripción preliminar de variables sociodemográficas 
@@ -141,7 +152,7 @@ Como segunda hipótesis, nos interesa corroborar si la cantidad de horas destina
 
 _Hipótesis 3_
 
-Partiendo del supuesto general -y corroborado en los análisis previos- que los varones dedican más horas que las mujeres al trabajo remunerado, mientras que la media de horas de trabajo doméstico no pago es mayor en mujeres que en varones, consideramos que esto no describe con fidelidad el fenómeno actual. Con lo cual, se buscará verificar -a parti del planteo de la tercera hipótesis- la relación inversa que existe entre el nivel de ingreso de los hogares, y la brecha entre la media de horas de trabajadas (remuneradas y no remuneradas). Dicho de otra forma, se intuye que a medida que aumenta el nivel de ingreso de los hogares, el tiempo dedicado a trabajo remunerado y no remunerado por hombres y mujeres se va equiparado.
+Partiendo del supuesto general -y corroborado en los análisis previos- que los varones dedican más horas que las mujeres al trabajo remunerado, mientras que la media de horas de trabajo doméstico no pago es mayor en mujeres que en varones, consideramos que esto no describe con fidelidad el fenómeno actual. Con lo cual, se buscará verificar -a partir del planteo de la tercera hipótesis- la relación inversa que existe entre el nivel de ingreso de los hogares, y la brecha entre la media de horas de trabajadas (remuneradas y no remuneradas). Dicho de otra forma, se intuye que a medida que aumenta el nivel de ingreso de los hogares, el tiempo dedicado a trabajo remunerado y no remunerado por hombres y mujeres se va equiparado.
 
 _Nota metodológica_
 
