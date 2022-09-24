@@ -5,15 +5,12 @@ output: html_document
 ---
 
 
-
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 # Cargar los paquetes necesarios acá
 library(readr)
 library(tidyverse)
 library(gt)
-library(ggplot2)
 ```
 
 
@@ -192,6 +189,43 @@ datos_uso_tiempo %>%
 
 
 Como era de esperar, en los días laborables el promedio de horas trabajadas se ubica entre las 8 y las 9 horas, en estos días, las horas de recreación son cercanas a las 2 horas. En cambio, en los días no laborables, las horas trabajadas se reducen prácticamente a 0, mientras que las horas de recreación se duplican con respecto a los días laborales.
+
+## Construimos nuevas variables para ver como se reparte la población de acuerdo a la cantidad de horas trabajadas y las dedicadas a la recreación
+
+Las categorías estarán armadas de la siguiente manera:
+Menos de 8 horas trabajadas y menos de una hora de recreación -> 1
+Menos de 8 horas trabajadas y entre 1 y dos horas de recración -> 2
+Menos de 8 hoaras trabajadas y 2 o más horas de recreación -> 3
+8 horas o más trabajadas y menos de una hora de recreación -> 4
+8 horas o más trabajadas y entre 1 y dos horas de recración -> 5
+8 horas o más trabajadas y 2 o más horas de recreación -> 6
+
+```{r}
+datos_uso_tiempo <- datos_uso_tiempo %>%
+  filter (dia_laborable == "Día laborable") %>% 
+  mutate(trabajo_recreacion = case_when(
+    trabajo_pago < 8 & recreacion < 1 ~ 1,
+    trabajo_pago < 8 & recreacion >= 1 & recreacion < 2 ~ 2,
+    trabajo_pago < 8 & recreacion >= 2 ~ 3,
+    trabajo_pago >= 8 & recreacion < 1 ~ 4,
+    trabajo_pago >= 8 & recreacion >= 1 & recreacion < 2 ~ 5,
+    trabajo_pago >= 8 & recreacion >= 2 ~ 6
+  ))
+
+datos_uso_tiempo %>% 
+  group_by(sexo, trabajo_recreacion) %>% 
+  summarise(n = n()) %>% 
+  group_by(sexo) %>% 
+  mutate(prop = n/sum(n)) %>% 
+  ggplot(aes(sexo, prop)) +
+  geom_col(aes(fill = factor(trabajo_recreacion))) +
+  scale_fill_brewer(palette = "Accent") +
+  scale_fill_discrete(name = "Trabajo y recreación") +
+  labs(title = "Proporción de hombres y mujeres según tiempo dedicado a trabajo
+       y recreación en días laborables", 
+       x = "Sexo", 
+       y = "%")
+```
 
 ## Hipótesis 2
 
