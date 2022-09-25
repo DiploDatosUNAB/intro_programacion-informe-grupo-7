@@ -53,27 +53,48 @@ Si bien la información contenida en la base de datos habilita un vasto análisi
 ##Analizamos los aspectos sociodemográficos del dataset
 
 datos_uso_tiempo %>% 
-  group_by (sexo) %>%
-  summarise (frec_sexo = n()) %>% 
-  mutate (porcentaje_sexo = frec_sexo/sum(frec_sexo)*100) %>%
+  group_by(sexo) %>%
+  summarise(frec_sexo = n()) %>% 
+  mutate(porcentaje_sexo = frec_sexo/sum(frec_sexo)*100) %>%
+  mutate(porcentaje_sexo = round(porcentaje_sexo, digits = 2)) %>% 
   ggplot(aes(sexo, porcentaje_sexo)) +
-  geom_col(aes(width = 0.3, fill='red'))
+  geom_col(aes(width = 0.3, fill = factor(porcentaje_sexo))) +
+  labs(title = "Proporción de hombres y mujeres", 
+       x = "Sexo", 
+       y = "%") +
+  scale_fill_discrete(name = "Sexo",
+                      labels = c("Varón" , "Mujer")) +
+  geom_text(aes(label = porcentaje_sexo), position = position_stack(vjust = .5))
 
 
 datos_uso_tiempo %>% 
-  group_by (rango_etario) %>%
-  summarise (frec_edad = n()) %>% 
-  mutate (porcentaje_edad = frec_edad/sum(frec_edad)*100) %>%
+  group_by(rango_etario) %>%
+  summarise(frec_edad = n()) %>% 
+  mutate(porcentaje_edad = frec_edad/sum(frec_edad)*100) %>%
+  mutate(porcentaje_edad = round(porcentaje_edad, digits = 2)) %>% 
   ggplot(aes(rango_etario, porcentaje_edad)) + 
-  geom_col(aes(width = 0.3, fill='lightblue'))
+  geom_col(aes(width = 0.3, fill=factor(porcentaje_edad)))+
+    labs(title = "Personas según grupos etarios", 
+       x = "Grupos etarios", 
+       y = "%") +
+  scale_fill_discrete(name = "Sexo",
+                      labels = c("14-24" , "25-39", "40-49", "50-64", "65+")) +
+  geom_text(aes(label = porcentaje_edad), position = position_stack(vjust = .5))
 
 
 datos_uso_tiempo %>% 
-  group_by (estado_ocupacional) %>%
-  summarise (frec_ocup = n()) %>% 
-  mutate (porcentaje_ocup = frec_ocup/sum(frec_ocup)*100) %>%
+  group_by(estado_ocupacional) %>%
+  summarise(frec_ocup = n()) %>% 
+  mutate(porcentaje_ocup = frec_ocup/sum(frec_ocup)*100) %>%
+  mutate(porcentaje_ocup = round(porcentaje_ocup, digits = 2)) %>% 
   ggplot(aes(estado_ocupacional, porcentaje_ocup)) + 
-  geom_col(aes(width = 0.3, fill='lightgreen'))
+  geom_col(aes(width = 0.3, fill= factor(porcentaje_ocup)))+
+  labs(title = "Personas según condicion de ocupación", 
+       x = "Condición de ocupación", 
+       y = "%") +
+  scale_fill_discrete(name = "Condición de ocupación",
+                      labels = c("Inactivo" , "Desocupado", "Ocupado")) +
+  geom_text(aes(label = porcentaje_ocup), position = position_stack(vjust = .5))
 
 ```
 ## Descripción preliminar de variables sociodemográficas 
@@ -219,13 +240,25 @@ datos_uso_tiempo %>%
   mutate(prop = n/sum(n)) %>% 
   ggplot(aes(sexo, prop)) +
   geom_col(aes(fill = factor(trabajo_recreacion))) +
-  scale_fill_brewer(palette = "Accent") +
-  scale_fill_discrete(name = "Trabajo y recreación") +
+  scale_fill_brewer(palette = "Accent", name = "Trabajo y recreación") +
   labs(title = "Proporción de hombres y mujeres según tiempo dedicado a trabajo
        y recreación en días laborables", 
        x = "Sexo", 
        y = "%")
 ```
+
+```{r}
+datos_uso_tiempo %>%
+  filter(dia_laborable == "Día laborable") %>% 
+  ggplot(aes(trabajo_pago, recreacion)) +
+  geom_jitter(aes(color = sexo)) +
+  geom_smooth(method = lm, aes(color = sexo)) +
+  labs(title = "Correlación entre horas dedicadas al trabajo pago y a recreación
+       en días laborables según sexo", 
+       x = "Sexo", 
+       y = "%")
+```
+
 
 ## Hipótesis 2
 
