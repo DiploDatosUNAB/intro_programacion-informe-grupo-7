@@ -416,9 +416,10 @@ datos_uso_tiempo %>%
   group_by(sexo, nivel_educativo) %>%  
   mutate(horas_trabajo_rem = mean(trabajo_pago)) %>% 
   ggplot(aes(nivel_educativo, horas_trabajo_rem)) +
-  geom_line(aes(color=sexo)) +
+  geom_line(aes(group = sexo, color=sexo)) +
   geom_point(aes(color=sexo)) +
   scale_color_discrete(name = "Sexo") +
+  scale_x_discrete(limits = c("Secundario incompleto", "Secundario completo/Superior incompleto", "Superior completo")) +
   scale_y_continuous(limits = c(5, 10)) +
   labs(title = "Horas dedicadas al trabajo pago según nivel educativo según sexo", 
        x = "Nivel educativo", 
@@ -430,9 +431,10 @@ datos_uso_tiempo %>%
   group_by(sexo, nivel_educativo) %>%  
   mutate(horas_trabajo_no_rem = mean(trabajo_domestico_no_pago)) %>% 
   ggplot(aes(nivel_educativo, horas_trabajo_no_rem)) +
-  geom_line(aes(color=sexo)) +
+  geom_line(aes(group = sexo, color=sexo)) +
   geom_point(aes(color=sexo)) +
   scale_color_discrete(name = "Sexo") +
+  scale_x_discrete(limits = c("Secundario incompleto", "Secundario completo/Superior incompleto", "Superior completo")) +
   scale_y_continuous(limits = c(0, 4)) +
   labs(title = "Horas dedicadasal trabajo doméstico no pago
        según nivel educativo según sexo", 
