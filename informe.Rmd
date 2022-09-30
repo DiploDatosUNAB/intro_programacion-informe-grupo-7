@@ -161,24 +161,6 @@ datos_uso_tiempo %>%
   summarise (frec_trabajo = n()) %>%
   mutate (porcentaje_trabajo = frec_trabajo/sum(frec_trabajo)*100)
 
-
-
-
-datos_uso_tiempo %>% 
-  filter(estado_ocupacional == "Ocupado" & dia_laborable == "Día no laborable" &
-           trabajo_pago > 0 ) %>% 
-  summarise (frec_trabajo_dnl = n())
-
-datos_uso_tiempo %>% 
-  filter(estado_ocupacional == "Ocupado" & dia_laborable == "Día no laborable" &
-           trabajo_domestico_no_pago > 0) %>% 
-  summarise (frec_trabajo_dnl = n())
-
-datos_uso_tiempo %>% 
-      filter(estado_ocupacional != "Ocupado" & trabajo_pago > 0) %>% 
-      summarise (frec_trabajo_nocup = n())
-  
-
 ```
 
 ## Descripción de la exploración de datos sobre cualidad laborable/no laborable del día de la encuesta
@@ -201,7 +183,7 @@ datos_uso_tiempo %>%
   cols_align(align = "center",
              columns = prom_trabajo_pago) %>% 
   fmt_number(columns = prom_trabajo_pago, 
-             decimals = 2, 
+             decimals = 1, 
              dec_mark = ",", 
              sep_mark = ".") %>% 
   tab_style(locations = cells_column_labels(columns = everything()),
@@ -218,7 +200,7 @@ datos_uso_tiempo %>%
   cols_align(align = "center",
              columns = prom_trabajo_pago) %>% 
   fmt_number(columns = c(prom_trabajo_pago), 
-             decimals = 2, 
+             decimals = 1, 
              dec_mark = ",", 
              sep_mark = ".") %>% 
   tab_style(locations = cells_column_labels(columns = everything()),
@@ -233,7 +215,7 @@ datos_uso_tiempo %>%
   cols_align(align = "center",
              columns = prom_trabajo_no_pago) %>% 
   fmt_number(columns = c(prom_trabajo_no_pago), 
-             decimals = 2, 
+             decimals = 1, 
              dec_mark = ",", 
              sep_mark = ".") %>% 
   tab_style(locations = cells_column_labels(columns = everything()),
@@ -249,7 +231,7 @@ datos_uso_tiempo %>%
   cols_align(align = "center",
              columns = prom_trabajo_no_pago) %>% 
   fmt_number(columns = c(prom_trabajo_no_pago), 
-             decimals = 2, dec_mark = ",", 
+             decimals = 1, dec_mark = ",", 
              sep_mark = ".") %>% 
   tab_style(locations = cells_column_labels(columns = everything()),
             style = list(cell_borders(sides = "bottom", 
@@ -307,14 +289,14 @@ datos_uso_tiempo %>%
   cols_label(dia_laborable = "Jornada", horas_trabajadas = "Trabajo remunerado",
              horas_recreacion = "Recreacion") %>% 
   fmt_number(columns = c(horas_trabajadas, horas_recreacion),
-             decimals = 2, dec_mark = ",", sep_mark = ".") %>% 
+             decimals = 1, dec_mark = ",", sep_mark = ".") %>% 
   tab_style(locations = cells_column_labels(columns = everything()),
             style = list(cell_borders(sides = "bottom", weight = px(3)),
             cell_text(weight = "bold")))
 ```
 
 
-Como era de esperar, en los días laborables el promedio de horas trabajadas se ubica entre las 8 y las 9 horas, en estos días, las horas de recreación son cercanas a las 2 horas. En cambio, en los días no laborables, las horas trabajadas se reducen prácticamente a 0, mientras que las horas de recreación se duplican con respecto a los días laborales.
+Como era de esperar, en los días laborables el promedio de horas trabajadas se ubica entre las 8 y las 9 horas, en estos días, las horas de recreación son cercanas a las 2 horas. En cambio, en los días no laborables, las horas trabajadas se reducen prácticamente a 0, mientras que las horas de recreación se duplican con respecto a los días laborales. Se corrobora, por lo tanto, la correlación inicialmente planteada. 
 
 ## Construimos nuevas variables para ver como se reparte la población de acuerdo a la cantidad de horas trabajadas y las dedicadas a la recreación
 
@@ -343,7 +325,7 @@ datos_uso_tiempo %>%
   summarise(n = n()) %>% 
   group_by(sexo) %>% 
   mutate(prop = n/sum(n)*100) %>%
-  mutate(prop = round(prop, digits = 2)) %>% 
+  mutate(prop = round(prop, digits = 1)) %>% 
   ggplot(aes(sexo, prop)) +
   geom_col(aes(width = 0.5, fill = factor(trabajo_recreacion))) +
   geom_text(aes(label = prop, group = factor(trabajo_recreacion)), position = position_stack(0.5)) +
@@ -354,6 +336,10 @@ datos_uso_tiempo %>%
        y = "%")
 ```
 
+Cuando desglosamos el análisis anterior según sexo, se observa que un 35% de las mujeres y los varones (suma de los valores centrales de la variable "trabajo_recreación") se alinean según los resultados promedio obtenidos previamente: alrededor de las 8 horas trabajadas, y menos 2 hs de recreación. 
+
+Sin embargo, llama la atención los valores extremos: los varones trabajan más de 8 hs y dedican más de 2 hs a la recreación un **51,5% más** que las mujeres (V: 35,3% vs. M: 23,3%). Por el contrario, la cantidad de mujeres que trabaja menos de 8 hs y dedican menos de 1 hs a la recreación **más que duplica** la cantidad de varones (M: 12,9% vs. V: 5%). 
+
 ```{r}
 datos_uso_tiempo %>%
   filter(dia_laborable == "Día laborable") %>% 
@@ -361,18 +347,21 @@ datos_uso_tiempo %>%
   geom_jitter(aes(color = sexo)) +
   geom_smooth(method = lm, aes(color = sexo)) +
   scale_color_discrete(name = "Sexo") +
-  labs(title = "Correlación entre horas dedicadas al trabajo pago y a recreación
+  labs(title = "Gráfico 2 - Correlación entre horas dedicadas al trabajo pago y a recreación
        en días laborables según sexo", 
        x = "Sexo", 
        y = "%")
 ```
 
+El gráfico 2 logra plasmar el diagnóstico anterior: se observa una correlación inversa entre cantidad de horas trabajadas y tiempo dedicado a la recreación, tanto en mujeres como en varones.
+
+Estos resultados nos exhiben, a priori, la posibilidad de una mayor presencia de trabajo no pago en mujeres que en varones. Buscaremos confirmar (o descartar) dicha sospecha en los análisis que siguen.
 
 ## Hipótesis 2
 
 
 ```{r}
-datos_uso_tiempo %>%  
+datos_uso_tiempo %>%
   select(sexo, dia_laborable, trabajo_domestico_no_pago, tareas_cuidados)  %>%
   group_by(sexo, dia_laborable) %>% 
   summarise(horas_trabajo_domestico = mean (trabajo_domestico_no_pago),                                 horas_tareas_cuidados = mean(tareas_cuidados)) %>% 
@@ -380,13 +369,14 @@ datos_uso_tiempo %>%
   cols_label(dia_laborable = "Sexo/Tipo de día", horas_trabajo_domestico = "Trabajo doméstico no pago",
              horas_tareas_cuidados = "Tareas de cuidado") %>% 
   fmt_number(columns = c(horas_trabajo_domestico, horas_tareas_cuidados),
-             decimals = 2, dec_mark = ",", sep_mark = ".") %>% 
+             decimals = 1, dec_mark = ",", sep_mark = ".") %>% 
   tab_style(locations = cells_column_labels(columns = everything()),
             style = list(cell_borders(sides = "bottom", weight = px(3)),
             cell_text(weight = "bold")))
 ```
 
-En un primer análisis se observa que las mujeres dedican más tiempo a tareas de cuidados como a trabajo doméstico no pago que los hombres y en ambos casos se da en una proporción de 2 a 1 en cuanto a la cantidad de horas dedicadas.
+
+Tal como fuera adelantado en el análisis preliminar de datos, se decidió tomar los casos de personas que se encontraban en un día laborable, y estudiar los casos con horas registradas como trabajo doméstico no pago y tareas de cuidado, a los efectos de demostrar (o descartar) correlación existente entre ambas, y verificar si dicha correlación se incrementa según cada sexo. En ese sentido, del cruce de variables se obtuvo que las mujeres **duplican el tiempo dedicado tanto a tareas de cuidados como a trabajo doméstico no pago** respecto de las horas que le dedican los hombres.
 
 ```{r}
 datos_uso_tiempo %>%
@@ -396,8 +386,8 @@ datos_uso_tiempo %>%
   geom_jitter(aes(color = sexo)) +
   geom_smooth(method = lm) +
   scale_color_discrete(name = "Sexo") +
-  labs(title = "Correlación entre horas dedicadas al trabajo pago y a trabajo
-       doméstico no pago y tareas de cuidados", 
+  labs(title = "Gráfico 3 - Correlación entre horas dedicadas al trabajo pago y a trabajo
+       doméstico no pago y tareas de cuidados - Varones", 
        x = "Trabajo pago", 
        y = "Trabajo doméstico y tareas de cuidados")
 
@@ -408,12 +398,14 @@ datos_uso_tiempo %>%
   geom_jitter(aes (color = sexo)) +
   scale_color_discrete(name = "Sexo") +
   geom_smooth(method = lm) +
-  labs(title = "Correlación entre horas dedicadas al trabajo pago y a trabajo
-       doméstico no pago y tareas de cuidados", 
+  labs(title = "Gráfico 4 - Correlación entre horas dedicadas al trabajo pago y a trabajo
+       doméstico no pago y tareas de cuidados - Mujeres", 
        x = "Trabajo pago", 
        y = "Trabajo doméstico y tareas de cuidados")
   
 ```
+
+Los **gráficos 3 y 4** ilustran la conclusión anteriormente alcanzada: si bien se verifica la correlación directa entre cantidad de horas dedicadas al trabajo doméstico no pago y horas dedicadas a tareas de cuidado en ambos sexos, dicha correlación es más estrecha para el caso de las mujeres. 
 
 
 ## Hipótesis 3
@@ -430,7 +422,7 @@ datos_uso_tiempo %>%
   cols_label(sexo = "Sexo", horas_trabajo_domestico = "Trabajo doméstico no pago",
              horas_trabajo_rem = "Trabajo remunerado", total_horas = "Total de horas") %>% 
   fmt_number(columns = c(horas_trabajo_domestico, horas_trabajo_rem, total_horas),
-             decimals = 2, dec_mark = ",", sep_mark = ".") %>% 
+             decimals = 1, dec_mark = ",", sep_mark = ".") %>% 
   tab_style(locations = cells_column_labels(columns = everything()),
             style = list(cell_borders(sides = "bottom", weight = px(3)),
             cell_text(weight = "bold")))
@@ -447,11 +439,15 @@ datos_uso_tiempo %>%
   cols_label(nivel_educativo = "Sexo/Nivel educativo", horas_trabajo_domestico = "Trabajo doméstico no pago",
              horas_trabajo_rem = "Trabajo remunerado", total_horas = "Total de horas") %>% 
   fmt_number(columns = c(horas_trabajo_domestico, horas_trabajo_rem, total_horas),
-             decimals = 2, dec_mark = ",", sep_mark = ".") %>% 
+             decimals = 1, dec_mark = ",", sep_mark = ".") %>% 
   tab_style(locations = cells_column_labels(columns = everything()),
             style = list(cell_borders(sides = "bottom", weight = px(3)),
             cell_text(weight = "bold"))) ## %>% 
 ```
+
+Corroborada la hipótesis que verifica que los varones destinan en promedio más horas que las mujeres al trabajo remunerado, y las mujeres destinan más horas al trabajo doméstico no pago, se busca estudiar en esta última instancia si existe una relación inversa entre el nivel educativo y la brecha entre trabajo pago y no pago, y si dicha relación se profundiza según sexo.
+
+Si bien el rango de valores de la variable "nivel_educativo" no distingue entre terminación o no de la primaria, ni tampoco releva información sobre finalización de posgrados, los datos permiten acceder a conclusiones interesantes: tanto en hombres como en mujeres la cantidad de horas dedicadas al trabajo remuerado aumenta acorde al nivel educativo alcanzado. No obstante, existe una brecha de género, al estudiar en términos absolutos la cantidad de horas que los hombres y las mujeres le dedican al trabajo remunerado respecto al doméstico no pago. 
 
 
 ```{r}
@@ -466,7 +462,7 @@ datos_uso_tiempo %>%
   scale_color_discrete(name = "Sexo") +
   scale_x_discrete(limits = c("Secundario incompleto", "Secundario completo/Superior incompleto", "Superior completo")) +
   scale_y_continuous(limits = c(5, 10)) +
-  labs(title = "Horas dedicadas al trabajo pago según nivel educativo según sexo", 
+  labs(title = "Gráfico 5 - Horas dedicadas al trabajo pago según nivel educativo según sexo", 
        x = "Nivel educativo", 
        y = "Cantidad de horas")  
 
@@ -481,9 +477,12 @@ datos_uso_tiempo %>%
   scale_color_discrete(name = "Sexo") +
   scale_x_discrete(limits = c("Secundario incompleto", "Secundario completo/Superior incompleto", "Superior completo")) +
   scale_y_continuous(limits = c(0, 4)) +
-  labs(title = "Horas dedicadasal trabajo doméstico no pago
+  labs(title = "Gráfico 6 - Horas dedicadas al trabajo doméstico no pago
        según nivel educativo según sexo", 
        x = "Nivel educativo", 
        y = "Cantidad de horas") 
 ```
 
+El **gráfico 5** demuestra la relación directa que existe entre cantidad de horas destinadas al trabajo pago conforme aumenta el nivel educativo alcanzado, tanto en varones como en mujeres. Dicha relación se invierte al estudiar las horas dedicadas al trabajo doméstico no pago respecto al nivel educativo alcanzado, tal como se desprende del **gráfico 6**. 
+
+Ahora bien, de los gráficos 5 y 6 se confirma también la brecha de género verificada en hipótesis anteriores, que se recrudece del análisis de este último cruce de datos: quienes más horas dedican al trabajo remunerado son los hombres con nivel educativo superior completo, mientras que las mujeres con secundario incompleto son quienes más horas destinan al trabajo doméstico no pago. 
