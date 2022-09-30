@@ -5,7 +5,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 # Cargar los paquetes necesarios acá
 library(readr)
 library(dplyr)
@@ -99,6 +99,7 @@ datos_uso_tiempo %>%
   geom_text(aes(label = porcentaje_ocup), position = position_stack(vjust = .5))
 
 ```
+
 ## Descripción preliminar de variables sociodemográficas 
 
 El universo de las personas encuestadas se ubica en un total de 2336, de las cuales 1345 son mujeres (57,6%) y 991 son varones (42,4%), habilitando únicamente respuestas binarias. En ese sentido, tal como se observa en el gráfico 1.A),la muestra se encuentra sesgada hacia el universo femenino, dado que la proporción de mujeres encuestadas supera al porcentaje de población femenina que efectivamente habita en la Ciudad de Buenos Aires, por lo que se deduce que las mujeres se encuentran en esta muestra sobrerepresentadas. 
@@ -159,7 +160,16 @@ datos_uso_tiempo %>%
   filter(estado_ocupacional == "Ocupado") %>%
   group_by (sexo, dia_laborable) %>%
   summarise (frec_trabajo = n()) %>%
-  mutate (porcentaje_trabajo = frec_trabajo/sum(frec_trabajo)*100)
+  mutate (porcentaje_trabajo = frec_trabajo/sum(frec_trabajo)*100) %>% 
+  gt(caption = "Cantidad de personas que trabajaron según tipo de día") %>% 
+  cols_label(dia_laborable = "Sexo/Tipo de día", frec_trabajo = "Cantidad",                         porcentaje_trabajo = "%") %>% 
+  cols_align(align = "center", 
+             columns = frec_trabajo) %>%  
+  fmt_number(columns = porcentaje_trabajo, 
+             decimals = 1, dec_mark = ",", sep_mark = ".") %>% 
+  tab_style(locations = cells_column_labels(columns = everything()),
+            style = list(cell_borders(sides = "bottom", weight = px(3)),
+            cell_text(weight = "bold")))
 
 ```
 
@@ -240,7 +250,7 @@ datos_uso_tiempo %>%
 
 ```
 
-##Descripción de los datos del uso del tiempo relacionados al trabajo remunerado y no remunerado
+## Descripción de los datos del uso del tiempo relacionados al trabajo remunerado y no remunerado
 
 Cómo era esperable, al analizar la variable _trabajo_pago_ en relación al sexo de la persona encuestada se observa un aumento en la cantidad de horas trabajadas por aquellos identificados como varones. Por el contrario, en la variable _trabajo_domestico_no_pago_ ocurre el proceso inverso; al realizar el cruce por la variable _sexo_ aumenta la cantidad de horas que las mujeres dedican a estas tareas y disminuyen las que los hombres dedican. Esta es una línea de análisis que profundizaremos en las hipótesis.
 
@@ -248,6 +258,7 @@ Cómo era esperable, al analizar la variable _trabajo_pago_ en relación al sexo
 ## Hipótesis
 
 _Hipótesis 1_
+
 Como afirmamos anteriormente nuestro interés principal reside en el estudio del tiempo dedicado a tareas laborales. En primer lugar, queremos observar si, en un día laborable, existe correlación entre la cantidad de horas dedicadas al trabajo y la realización de actividades recreativas y de cuidado personal.
 
 
