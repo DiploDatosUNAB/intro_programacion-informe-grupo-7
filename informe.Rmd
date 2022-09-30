@@ -4,7 +4,6 @@ author: "SH-MRM"
 output: html_document
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 # Cargar los paquetes necesarios acá
@@ -13,6 +12,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(gt)
+
 ```
 
 
@@ -58,10 +58,10 @@ datos_uso_tiempo %>%
   group_by(sexo) %>%
   summarise(frec_sexo = n()) %>% 
   mutate(porcentaje_sexo = frec_sexo/sum(frec_sexo)*100) %>%
-  mutate(porcentaje_sexo = round(porcentaje_sexo, digits = 2)) %>% 
+  mutate(porcentaje_sexo = round(porcentaje_sexo, digits = 1)) %>% 
   ggplot(aes(sexo, porcentaje_sexo)) +
   geom_col(aes(width = 0.5, fill = factor(porcentaje_sexo))) +
-  labs(title = "Proporción de hombres y mujeres", 
+  labs(title = "Gráfico 1.A) - Proporción de hombres y mujeres", 
        x = "Sexo", 
        y = "%") +
   scale_fill_discrete(name = "Sexo",
@@ -73,10 +73,10 @@ datos_uso_tiempo %>%
   group_by(rango_etario) %>%
   summarise(frec_edad = n()) %>% 
   mutate(porcentaje_edad = frec_edad/sum(frec_edad)*100) %>%
-  mutate(porcentaje_edad = round(porcentaje_edad, digits = 2)) %>% 
+  mutate(porcentaje_edad = round(porcentaje_edad, digits = 1)) %>% 
   ggplot(aes(rango_etario, porcentaje_edad)) + 
   geom_col(aes(width = 0.5, fill=factor(porcentaje_edad)))+
-    labs(title = "Personas según grupos etarios", 
+    labs(title = "Gráfico 1.B) - Personas según grupos etarios", 
        x = "Grupos etarios", 
        y = "%") +
   scale_fill_discrete(name = "Sexo",
@@ -88,10 +88,10 @@ datos_uso_tiempo %>%
   group_by(estado_ocupacional) %>%
   summarise(frec_ocup = n()) %>% 
   mutate(porcentaje_ocup = frec_ocup/sum(frec_ocup)*100) %>%
-  mutate(porcentaje_ocup = round(porcentaje_ocup, digits = 2)) %>% 
+  mutate(porcentaje_ocup = round(porcentaje_ocup, digits = 1)) %>% 
   ggplot(aes(estado_ocupacional, porcentaje_ocup)) + 
   geom_col(aes(width = 0.5, fill= factor(porcentaje_ocup)))+
-  labs(title = "Personas según condicion de ocupación", 
+  labs(title = "Gráfico 1.C) - Personas según condición de ocupación", 
        x = "Condición de ocupación", 
        y = "%") +
   scale_fill_discrete(name = "Condición de ocupación",
@@ -101,38 +101,77 @@ datos_uso_tiempo %>%
 ```
 ## Descripción preliminar de variables sociodemográficas 
 
-El universo de las personas encuestadas se ubica en un total de 2336, de las cuales 1345 son mujeres y 991 son varones. En ese sentido, es posible notar que la muestra se encuentra sesgada, dado que la proporción de mujeres encuestadas (57%) supera al porcentaje de población femenina que habita en la Ciudad de Buenos Aires, por lo que las mujeres en esta muestra se encuentran sobrerepresentadas. 
+El universo de las personas encuestadas se ubica en un total de 2336, de las cuales 1345 son mujeres (57,6%) y 991 son varones (42,4%), habilitando únicamente respuestas binarias. En ese sentido, tal como se observa en el gráfico 1.A),la muestra se encuentra sesgada hacia el universo femenino, dado que la proporción de mujeres encuestadas supera al porcentaje de población femenina que efectivamente habita en la Ciudad de Buenos Aires, por lo que se deduce que las mujeres se encuentran en esta muestra sobrerepresentadas. 
 
-En segundo lugar, se desprende que, del análisis de la tabla de frecuencias según rangos etáreos, la mayor cantidad de casos encuestados se halla en edades de entre 25 y 39 años (28,8%), seguido de personas que superan los 65 años (23,4%).
+En segundo lugar, del análisis de frecuencias según rangos etáreos del gráfico 1.B) se desprende que la mayor cantidad de casos encuestados se halla en edades de entre 25 y 39 años (28,8%), seguido de personas que superan los 65 años (23,4%). En líneas generales, podemos mencionar que la distribución de la población por edades se encuentra balanceada.
 
-Finalmente, del análisis de la tercera tabla, que devuelve la frecuencia de casos según estado ocupacional, se observa que el grueso de la muestra la componen personas ocupadas (68,8%), es decir, que actualmente cuentan con trabajo, o bien trabajaron al menos 1 hora en la semana de referencia, y en segundo lugar, personas inactivas (27,3%). Cabe recordar que la condición de inactividad refiere a la pertenencia a un determinado grupo etáreo (ya sea, menores de 14 años, o mayores de 65) o bien por condiciones particulares (personas con discapacidad, estudiantes, entre otros).
+Finalmente, del análisis del gráfico 1.C), que devuelve la frecuencia de casos según estado ocupacional, se observa que el grueso de la muestra la componen personas ocupadas (68,8%), es decir, que actualmente cuentan con trabajo, o bien trabajaron al menos 1 hora en la semana de referencia, y en segundo lugar, personas inactivas (27,3%). Cabe aclarar dos cuestiones: en primer lugar, la condición de inactividad refiere a la pertenencia a un determinado grupo etáreo (ya sea, menores de 14 años, que no se encuentran alcanzadxs por la presente encuesta, o mayores de 65) o bien por condiciones particulares (personas con discapacidad, estudiantes, entre otros).En segundo lugar, del mismo modo que fuera señalada la sobrerrepresentación de las mujeres en esta muestra, también es posible advertir una sobrerrepresentación de las personas ocupadas.
 
 
 ```{r}
 ##Exploramos datos sobre cualidad laborable o no laborable del día de la encuesta
 
-
 datos_uso_tiempo %>% 
   group_by (dia_laborable) %>%
   summarise (frec_dialaborable = n()) %>%
   mutate (porcentaje_dialaborable = frec_dialaborable/sum(frec_dialaborable)*100) %>%
-  gt(caption = "Personas según tipo de día") %>% 
+  gt(caption = "Cantidad de personas según tipo de día") %>% 
   cols_label(dia_laborable = "Tipo de día", frec_dialaborable = "Día laborable",                         porcentaje_dialaborable = "%") %>% 
   cols_align(align = "center", 
              columns = frec_dialaborable) %>%  
   fmt_number(columns = porcentaje_dialaborable, 
-             decimals = 2, dec_mark = ",", sep_mark = ".") %>% 
+             decimals = 1, dec_mark = ",", sep_mark = ".") %>% 
   tab_style(locations = cells_column_labels(columns = everything()),
             style = list(cell_borders(sides = "bottom", weight = px(3)),
             cell_text(weight = "bold")))
 
 datos_uso_tiempo %>% 
-  filter(estado_ocupacional == "Ocupado" & dia_laborable == "Día no laborable") %>% 
+  filter(sexo == "Mujer") %>%
+  group_by (dia_laborable) %>%
+  summarise (frec_dialaborable = n()) %>%
+  mutate (porcentaje_dialaborable = frec_dialaborable/sum(frec_dialaborable)*100) %>%
+  gt(caption = "Cantidad de mujeres según tipo de día") %>% 
+  cols_label(dia_laborable = "Tipo de día", frec_dialaborable = "Día laborable",                         porcentaje_dialaborable = "%") %>% 
+  cols_align(align = "center", 
+             columns = frec_dialaborable) %>%  
+  fmt_number(columns = porcentaje_dialaborable, 
+             decimals = 1, dec_mark = ",", sep_mark = ".") %>% 
+  tab_style(locations = cells_column_labels(columns = everything()),
+            style = list(cell_borders(sides = "bottom", weight = px(3)),
+            cell_text(weight = "bold")))
+
+datos_uso_tiempo %>% 
+  filter(sexo == "Varon") %>%
+  group_by (dia_laborable) %>%
+  summarise (frec_dialaborable = n()) %>%
+  mutate (porcentaje_dialaborable = frec_dialaborable/sum(frec_dialaborable)*100) %>%
+  gt(caption = "Cantidad de varones según tipo de día") %>% 
+  cols_label(dia_laborable = "Tipo de día", frec_dialaborable = "Día laborable",                         porcentaje_dialaborable = "%") %>% 
+  cols_align(align = "center", 
+             columns = frec_dialaborable) %>%  
+  fmt_number(columns = porcentaje_dialaborable, 
+             decimals = 1, dec_mark = ",", sep_mark = ".") %>% 
+  tab_style(locations = cells_column_labels(columns = everything()),
+            style = list(cell_borders(sides = "bottom", weight = px(3)),
+            cell_text(weight = "bold")))
+
+datos_uso_tiempo %>% 
+  filter(estado_ocupacional == "Ocupado") %>%
+  group_by (sexo, dia_laborable) %>%
+  summarise (frec_trabajo = n()) %>%
+  mutate (porcentaje_trabajo = frec_trabajo/sum(frec_trabajo)*100)
+
+
+
+
+datos_uso_tiempo %>% 
+  filter(estado_ocupacional == "Ocupado" & dia_laborable == "Día no laborable" &
+           trabajo_pago > 0 ) %>% 
   summarise (frec_trabajo_dnl = n())
 
 datos_uso_tiempo %>% 
   filter(estado_ocupacional == "Ocupado" & dia_laborable == "Día no laborable" &
-           trabajo_pago > 0) %>% 
+           trabajo_domestico_no_pago > 0) %>% 
   summarise (frec_trabajo_dnl = n())
 
 datos_uso_tiempo %>% 
@@ -142,9 +181,14 @@ datos_uso_tiempo %>%
 
 ```
 
-## Descripción de los datos
+## Descripción de la exploración de datos sobre cualidad laborable/no laborable del día de la encuesta
 
-Como hemos señalado previamente, nos enfocaremos en el análisis de los datos que refieren, en particular, a la cantidad de tiempo destinado al trabajo en sus distintas formas y/o actividades, a lo largo de una jornada. A los efectos de llevar a cabo un estudio consistente de la información presente en la encuesta, consideramos necesario descartar posibles anomalías en el registro de los datos sobre la jornada laboral. Esto es: casos en los que la persona encuestada, considerada ocupada, registre horas dedicadas a una actividad laboral ("trabajo pago") en un día no laborable. En este sentido, de los 1607 ocupadxs que releva la encuesta, 37 respondieron que el día de la encuesta fue **No laborable**, y dedicaron tiempo a realizar un trabajo pago. Si bien los porcentajes y valores difieren, ocurre algo similar cuando se hace este mismo análisis, pero para aquellas personas que declararon ser **Inactivas** o **Desocupadas**.
+Como hemos señalado previamente, nos enfocaremos en el análisis de los datos que refieren, en particular, a la cantidad de tiempo destinado al trabajo en sus distintas formas y/o actividades, a lo largo de una jornada. A tales efectos, consideramos pertinente rastrear la proporción de personas que, en el día de la encuesta, se encontraban en un día laborable, o bien no laborable. En este sentido,obtuvimos un resultado equilibrado entre ambas respuestas: 48% de los encuestados respondió que se encontraba en un día laborable, mientras que el 52% restante no. 
+
+Ahora bien, realizamos un análisis ulterior del universo de personas encuestadas, a los efectos de preparar el terreno para el abordaje de las hipótesis subsiguientes. Se decidió estudiar por separado cuáles fueron las respuestas según cada sexo: del universo de las mujeres encuestadas, el 42,2% se hallaba en un día laborable, mientras el 57,8% no. Por el contrario, dentro del relevamiento del sexo masculino, el  56% se encontraba en un día laborable, y el restante 44% no. 
+
+Finalmente, se decidió hacer un último recorte del universo de ocupados, y obtuvimos que la cantidad de varones ocupados encuestados en un día laborable superaba a la cantidad de mujeres en esa misma condición (72% vs 67,2%).
+
 
 
 ```{r}
@@ -214,14 +258,15 @@ datos_uso_tiempo %>%
 
 ```
 
-##Descripción de los datos
-Cómo era esperable, al analizar la variable _trabajo_pago_ en relación al sexo de la persona encuestada se observa un aumento en la cantidad de horas trabajadas por aquellos identificados como varones. Por el contrario, en la variable _trabajo_domestico_no_pago_ ocurre el proceso inverso; al realizar el cruce por la variable _sexo_ aumenta la cantidad de horas que las mujeres dedican a estas tareas y disminuyen las que los hombres dedican. Esta es una línea de análisis que profundizaremos en las hipótesis y en las entregas futuras.
+##Descripción de los datos del uso del tiempo relacionados al trabajo remunerado y no remunerado
+
+Cómo era esperable, al analizar la variable _trabajo_pago_ en relación al sexo de la persona encuestada se observa un aumento en la cantidad de horas trabajadas por aquellos identificados como varones. Por el contrario, en la variable _trabajo_domestico_no_pago_ ocurre el proceso inverso; al realizar el cruce por la variable _sexo_ aumenta la cantidad de horas que las mujeres dedican a estas tareas y disminuyen las que los hombres dedican. Esta es una línea de análisis que profundizaremos en las hipótesis.
 
 
 ## Hipótesis
 
 _Hipótesis 1_
-Como afirmamos anteriormente nuestro interés principal reside en el estudio del tiempo dedicado a tareas laborales. En primer lugar, queremos observar si existe correlación en un día laborable, la cantidad de horas dedicadas al trabajo con la realización de actividades recreativas y de cuidado personal.
+Como afirmamos anteriormente nuestro interés principal reside en el estudio del tiempo dedicado a tareas laborales. En primer lugar, queremos observar si, en un día laborable, existe correlación entre la cantidad de horas dedicadas al trabajo y la realización de actividades recreativas y de cuidado personal.
 
 
 _Hipótesis 2_
@@ -232,9 +277,9 @@ _Hipótesis 3_
 
 Partiendo del supuesto general -y corroborado en los análisis previos- que los varones dedican más horas que las mujeres al trabajo remunerado, mientras que la media de horas de trabajo doméstico no pago es mayor en mujeres que en varones, consideramos que esto no describe con fidelidad el fenómeno actual. Con lo cual, se buscará verificar -a partir del planteo de la tercera hipótesis- la relación inversa que existe entre el nivel de ingreso de los hogares, y la brecha entre la media de horas de trabajadas (remuneradas y no remuneradas). Dicho de otra forma, se intuye que a medida que aumenta el nivel de ingreso de los hogares, el tiempo dedicado a trabajo remunerado y no remunerado por hombres y mujeres se va equiparado.
 
-_Nota metodológica_
+_Nota metodológica: dato anómalo_
 
-Para esta última hipótesis pensabamos utilizar la variable _quintil_ingeso_ del dataset que registra a qué quintil pertenece cada hogar. Sin embargo al analizar los datos descubrimos que en todos los registros figura la categoría **5to Quintil** lo cuál es metodológicamente incorrecto y por tanto entendemos que el dataset presenta un error en ese campo. Para sortear este problema decidimos utilizar la variable _nivel_educativo_ como proxy de análisis del nivel de ingresos del hogar y de la persona encuestada.
+Para esta última hipótesis pensábamos utilizar la variable _quintil_ingeso_ del dataset que registra a qué quintil pertenece cada hogar. Sin embargo al indagar sobre los datos descubrimos que en todos los registros figura la categoría **5to Quintil** lo cuál no sólo es es metodológicamente incorrecto, sino que advertimos que podría ser una anomalía de la base de datos, por lo que el presunto error condicionó nuestra línea investgativa. En ese marco, decidimos sortear el problema utilizando la variable _nivel_educativo_ como proxy de análisis del nivel de ingresos del hogar y de la persona encuestada.
 
 
 ## Entrega Final
